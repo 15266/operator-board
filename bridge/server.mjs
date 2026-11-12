@@ -9,7 +9,7 @@ import os from "node:os";
 import { spawn } from "node:child_process";
 import net from "node:net";
 import { fileURLToPath } from "node:url";
-import { adapterWorkBuddyAcp } from "./workbuddy-acp.mjs";
+import { adapterWorkBuddyGui } from "./workbuddy-gui.mjs";
 import { listWorkBuddyModels } from "./workbuddy-models.mjs";
 import { applyDiscovery, discover as scanLocal, redactSecrets as discoverRedact, setUserSecret, stripSecrets } from "./discover.mjs";
 import { handleScanHttp, scanLocal as scanWithPlugins, createLiveHost, assertNoSecrets as assertScannerNoSecrets, promoteDraft } from "./scanners/loader.mjs";
@@ -252,12 +252,20 @@ async function execute(rec, body) {
   rec._force = !!body.force;
   try {
     if (rec.executor === "workbuddy") {
-      await adapterWorkBuddyAcp(rec, cwd, { port: WB_PORT, token: WB_TOKEN, update, redact });
+      await adapterWorkBuddyGui(rec, cwd, { update, exePath: WB_EXE });
     } else if (rec.executor === "codex") await adapterCodex(rec);
     else if (rec.executor === "doubao") await adapterDoubao(rec, cwd);
     else throw new Error(`执行器 ${rec.executor} 还没有桥接适配器（待核实）`);
-    const { checks, allOk } = applyChecks(rec, expect);
-    update(rec, { checks, state: allOk ? "verified" : rec.reply ? "replied_unverified" : "failed", finished_at: now() }, allOk ? "校验通过" : "收到结果但校验未通过");
+    if (rec._guiDelivered) {
+      update(rec, {
+        checks: [{ name: "已在 WorkBuddy 窗口新建可见任务", ok: true }],
+        state: "replied_unverified",
+        finished_at: now(),
+      }, "已投递到 WorkBuddy 可见窗口，请在左侧「任务」中查看并发送");
+    } else {
+      const { checks, allOk } = applyChecks(rec, expect);
+      update(rec, { checks, state: allOk ? "verified" : rec.reply ? "replied_unverified" : "failed", finished_at: now() }, allOk ? "校验通过" : "收到结果但校验未通过");
+    }
   } catch (e) {
     const { checks } = applyChecks(rec, expect);
     const msg = String(e.message || e);
@@ -308,13 +316,13 @@ async function health() {
       jobs_ok: false,
       jobs_issue: "后台 job 会与 GUI serve 抢同一端口（EADDRINUSE），待修复",
       acp_ok: h?.status === 200 && !!WB_TOKEN,
-      adapter: "acp",
+      adapter: "task-deeplink",
       exe_path: WB_EXE || wb?.exe_path || null,
       source: wb?.source || [],
       auth_status: wb?.auth_status || (WB_TOKEN ? "from_env" : "missing"),
     };
   } catch (e) {
-    out.workbuddy = { error: String(e), jobs_ok: false, jobs_issue: "后台 job 会与 GUI serve 抢同一端口（EADDRINUSE），待修复", acp_ok: false, adapter: "acp" };
+    out.workbuddy = { error: String(e), jobs_ok: false, jobs_issue: "后台 job 会与 GUI serve 抢同一端口（EADDRINUSE），待修复", acp_ok: false, adapter: "task-deeplink" };
   }
   const codexCli = (CODEX_JS && fs.existsSync(CODEX_JS)) || (CODEX_CMD && fs.existsSync(CODEX_CMD));
   out.codex = { cli: !!codexCli, cli_path: CODEX_JS || CODEX_CMD || null, used: state.codexUsed, max: CODEX_MAX, proxy_port: PROXY_PORT || null, proxy_up: PROXY_PORT ? await portOpen(PROXY_PORT) : false };

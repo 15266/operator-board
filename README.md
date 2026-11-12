@@ -34,7 +34,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\start-board.ps1
 - 未配置国王执行器时，派发和汇报会被拦住
 - 任务行可单独派发，也可以「派发全部未完成任务」；有结果后可「向国王汇报本轮结果」
 
-当前可派发的适配器：WorkBuddy（ACP）、豆包桌面（CDP「新工作任务」）、Codex CLI。探测到不等于已连通，也不保证这一次派发成功。
+当前可派发的适配器：WorkBuddy（官方可见任务链接）、豆包桌面（CDP「新工作任务」）、Codex CLI。探测到不等于已连通，也不保证这一次派发成功。
 
 ## 范围
 
