@@ -1,0 +1,49 @@
+{
+  "version": "0.1.0",
+  "rules": {
+    "discovery_is_not_connected": true,
+    "discovery_is_not_tool_verification": true,
+    "listing_models_is_not_verification": true,
+    "no_secrets_in_records": true,
+    "no_vendor_list_in_the_host": true,
+    "loopback_declared_ports_only": true,
+    "do_not_disturb_running_apps": true,
+    "do_not_bind_claimed_ports": true,
+    "jobs_hit_is_not_acp_verification": true,
+    "user_promotion_only": true,
+    "plugin_folder_is_not_a_live_link": true
+  },
+  "scanners": [
+    {
+      "id": "_template",
+      "display_name": "Scanner template",
+      "module": "scanners/_template",
+      "status": "skeleton",
+      "notes": "Copy this folder; not a live interface."
+    },
+    {
+      "id": "workbuddy",
+      "display_name": "WorkBuddy",
+      "module": "scanners/workbuddy",
+      "status": "experimental"
+    },
+    {
+      "id": "codex",
+      "display_name": "Codex CLI",
+      "module": "scanners/codex",
+      "status": "experimental"
+    },
+    {
+      "id": "doubao",
+      "display_name": "Doubao desktop (CDP)",
+      "module": "scanners/doubao",
+      "status": "experimental"
+    },
+    {
+      "id": "ollama",
+      "display_name": "Ollama",
+      "module": "scanners/ollama",
+      "status": "experimental"
+    }
+  ]
+}

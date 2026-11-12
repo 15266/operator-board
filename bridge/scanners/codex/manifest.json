@@ -1,0 +1,86 @@
+{
+  "id": "codex",
+  "display_name": "Codex CLI",
+  "discover": {
+    "processes": [
+      {
+        "name": "codex",
+        "name_regex": "codex"
+      }
+    ],
+    "path": [
+      {
+        "command": "codex"
+      }
+    ],
+    "install_dirs": [
+      {
+        "path": "${env:CODEX_JS}"
+      },
+      {
+        "path": "${APPDATA}/npm/node_modules/@openai/codex/bin",
+        "exists_file": "codex.js"
+      },
+      {
+        "path": "${HOME}/AppData/Roaming/npm/node_modules/@openai/codex/bin",
+        "exists_file": "codex.js"
+      }
+    ]
+  },
+  "endpoint": {
+    "transport": "cli",
+    "adapter": "codex",
+    "cli_path_from": "install_dirs"
+  },
+  "auth": {
+    "mode": "running_session",
+    "auth_ref": "CODEX_API_KEY",
+    "session": {
+      "env_keys": [
+        "CODEX_API_KEY"
+      ],
+      "source": "bridge_env",
+      "infer_session": false
+    },
+    "user_prompt": "找到本机 Codex 进程或安装目录并不等于已核实桌面登录。缺少 CODEX_API_KEY 并不表示需要用户填写密钥（needs_user_secret 保持 false），也不要因此升成 session_available。桌面登录态需单独核验。"
+  },
+  "probe": {
+    "method": "cli_version",
+    "path": "--version",
+    "ok_when": "exit_0",
+    "timeout_ms": 1000,
+    "live_default": false
+  },
+  "safety": {
+    "may_restart": false,
+    "may_kill": false,
+    "may_bind_port": false,
+    "may_start_if_stopped": false,
+    "do_not_disturb": [
+      "codex",
+      "FlClash",
+      "FlClash.exe"
+    ]
+  },
+  "compat_health_key": "codex",
+  "notes": "Finding the binary or process is `found`, not a live exec and not session_available. A missing CODEX_API_KEY does not mean uninstalled and does not mean needs_user_secret. Desktop login ≠ session_available. Optional HTTP proxy (e.g. FlClash) is environment, not this interface; never start or restart it to complete a scan.",
+  "catalog": {
+    "method": "none",
+    "current_model_file": "${HOME}/.codex/config.toml",
+    "current_model_key": "model",
+    "note": "Codex CLI has no official model-list command; do not run codex exec to list models. The current model may be read from config.toml only. The published list is official models.json entries with visibility=list; availability still depends on plan and sign-in.",
+    "published_models": [
+      "gpt-6.1-sol",
+      "gpt-6-astra",
+      "gpt-6-sol",
+      "gpt-6-luna",
+      "gpt-5.6-sol",
+      "gpt-6.1-terra",
+      "gpt-5.6-terra",
+      "gpt-5.6-luna",
+      "gpt-5.5"
+    ],
+    "published_source": "https://github.com/openai/codex/blob/main/codex-rs/models-manager/models.json",
+    "published_as_of": "2026-11-11"
+  }
+}

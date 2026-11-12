@@ -1,0 +1,35 @@
+# Dependencies and build
+node_modules/
+dist/
+.vite/
+coverage/
+
+# Local secrets and machine state
+.env
+.env.*
+!.env.example
+logs/
+*.log
+bridge-token
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.local
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Local machine-only docs (contain absolute paths)
+AGENTS.md
+TASK-BRIEF.md
+
+# Local backups and screenshots
+_backup/
+backups/
+screenshots/
+
+# Archives produced for upload
+/*.zip

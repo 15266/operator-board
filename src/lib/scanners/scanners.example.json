@@ -1,0 +1,60 @@
+{
+  "version": "0.1.0",
+  "_comment": "Example discovery records only — not a live scan of any machine. No secret values. tools_verified is always false; chat_bridge is always unverified.",
+  "records": [
+    {
+      "scanner_id": "ollama",
+      "display_name": "Ollama",
+      "status": "reachable",
+      "evidence": {
+        "process_names": ["ollama"],
+        "path_hits": ["/usr/local/bin/ollama"],
+        "open_ports": [{ "host": "127.0.0.1", "port": 11434 }],
+        "probe": { "method": "http_get", "ok": true, "note": "GET /api/tags" },
+        "model_names": ["llama3"]
+      },
+      "endpoint": {
+        "transport": "http",
+        "adapter": "openai-compatible",
+        "base_url": "http://127.0.0.1:11434/v1",
+        "openai_compatible": true
+      },
+      "auth": { "mode": "none", "auth_ref": "OLLAMA_API_KEY", "session_present": false, "needs_user_secret": false },
+      "tools_verified": false,
+      "chat_bridge": "unverified",
+      "notes": "Reachable local Ollama. Model list is inventory, not tool verification."
+    },
+    {
+      "scanner_id": "workbuddy",
+      "display_name": "WorkBuddy",
+      "status": "session_available",
+      "evidence": {
+        "process_names": ["WorkBuddy.exe"],
+        "session_present": true,
+        "probe": { "method": "http_get", "ok": true, "note": "GET /api/v1/health" }
+      },
+      "endpoint": {
+        "transport": "desktop_bridge",
+        "adapter": "workbuddy",
+        "working_directory_supported": true
+      },
+      "auth": { "mode": "running_session", "auth_ref": "WB_TOKEN", "session_present": true, "needs_user_secret": false },
+      "tools_verified": false,
+      "chat_bridge": "unverified",
+      "notes": "Session present (names only). ACP + workingDirectory is the known shape; jobs remain unverified."
+    },
+    {
+      "scanner_id": "codex",
+      "display_name": "Codex CLI",
+      "status": "found",
+      "evidence": {
+        "install_dirs": ["C:/Users/example/AppData/Roaming/npm/node_modules/@openai/codex/bin/codex.js"]
+      },
+      "endpoint": { "transport": "cli", "adapter": "codex" },
+      "auth": { "mode": "running_session", "auth_ref": "CODEX_API_KEY", "session_present": false, "needs_user_secret": false },
+      "tools_verified": false,
+      "chat_bridge": "unverified",
+      "notes": "Binary found; not a live exec."
+    }
+  ]
+}
