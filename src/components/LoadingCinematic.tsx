@@ -13,7 +13,7 @@ const HOLD_SPIN = 0.45;
 /** Overlay fade-in. Typewriter in short mode waits for this to finish. */
 export const CINEMATIC_ENTER_MS = 600;
 /** Overlay fade-out after a skip or the scripted welcome exit. */
-export const CINEMATIC_LEAVE_MS = 600;
+export const CINEMATIC_LEAVE_MS = 2400;
 
 export type LoadingCinematicProps = {
   /** True while the first-tab boot sequence is still holding (shell not ready, or the initial demo-data fetch on first paint). Later interface scans must not drive this overlay. */
@@ -268,7 +268,7 @@ export function LoadingCinematic({ loading, onLeaving, onFinished }: LoadingCine
       const opacity = Number(getComputedStyle(root).opacity);
       const duration = opacity < 0.12 ? 200 : CINEMATIC_LEAVE_MS;
       const onEnd = (event: TransitionEvent) => {
-        if (event.propertyName !== "opacity") return;
+        if (event.target !== root || event.propertyName !== "opacity") return;
         root.removeEventListener("transitionend", onEnd);
         finish();
       };
