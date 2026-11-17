@@ -1,0 +1,113 @@
+{
+  "id": "workbuddy",
+  "display_name": "WorkBuddy",
+  "discover": {
+    "processes": [
+      {
+        "name": "WorkBuddy.exe",
+        "name_regex": "^WorkBuddy",
+        "read_env": true
+      }
+    ],
+    "path": [
+      {
+        "command": "codebuddy"
+      }
+    ],
+    "install_dirs": [
+      {
+        "path": "${env:WB_EXE}"
+      },
+      {
+        "path": "D:/workbuddy",
+        "exists_file": "WorkBuddy.exe"
+      },
+      {
+        "path": "${env:WB_CLI}"
+      }
+    ],
+    "ports": [
+      {
+        "host": "127.0.0.1",
+        "from_env": "WB_PORT",
+        "protocol": "http",
+        "probe_path": "/api/v1/health",
+        "role": "observed"
+      }
+    ]
+  },
+  "endpoint": {
+    "transport": "acp",
+    "adapter": "workbuddy",
+    "paths": {
+      "health": "/api/v1/health",
+      "acp": "acp",
+      "models": "/api/v1/models",
+      "current_model": "/api/v1/settings/model"
+    },
+    "working_directory_supported": true,
+    "notes": "Verified shape on the host (separate from this scanner): ACP + workingDirectory. The jobs API is still broken (GUI serve port clash). Discovery must not mark jobs verified.",
+    "base_url_template": "http://127.0.0.1:${port}"
+  },
+  "auth": {
+    "mode": "running_session",
+    "auth_ref": "WB_TOKEN",
+    "session": {
+      "env_keys": [
+        "WB_TOKEN",
+        "WB_PORT"
+      ],
+      "source": "bridge_env"
+    },
+    "user_prompt": "桌面客户端不需要填写 WB_TOKEN。仅在你主动配置独立 CodeBuddy Code 公开 Gateway 时，填写该服务提供的密码；桌面登录密码不适用。"
+  },
+  "probe": {
+    "method": "http_get",
+    "path": "/api/v1/health",
+    "ok_when": "status_2xx",
+    "timeout_ms": 1000,
+    "live_default": false
+  },
+  "safety": {
+    "may_restart": false,
+    "may_kill": false,
+    "may_bind_port": false,
+    "may_start_if_stopped": false,
+    "do_not_disturb": [
+      "WorkBuddy.exe",
+      "WorkBuddy",
+      "codebuddy"
+    ]
+  },
+  "compat_health_key": "workbuddy",
+  "notes": "桌面安装、内部端口与公开 Gateway 分开判断；健康检查必须匹配官方响应。扫描不提取桌面登录凭据，也不验证任务执行。",
+  "catalog": {
+    "method": "http_get",
+    "paths": [
+      "/api/v1/models",
+      "/v1/models"
+    ],
+    "current_model_path": "/api/v1/settings/model",
+    "timeout_ms": 1000,
+    "note": "Local HTTP has no official model catalog; /api/v1/settings/model is the currently selected model only. Official built-in names (and Auto) are filled from WorkBuddy docs when the local catalog is missing; this is inventory, not a live account list.",
+    "published_models": [
+      "Auto",
+      "Hy4 preview",
+      "Hy3",
+      "GLM-5.3",
+      "GLM-5.3-Flash",
+      "GLM-5.2",
+      "GLM-5.1",
+      "GLM-5v-Turbo",
+      "MiniMax-M3",
+      "MiniMax-m2.7",
+      "Kimi-K3",
+      "Kimi-K2.7-Code",
+      "Kimi-K2.6",
+      "Deepseek-V4-Flash",
+      "Deepseek-V4-Pro"
+    ],
+    "published_source": "https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Model",
+    "published_as_of": "2026-11-11"
+  }
+}

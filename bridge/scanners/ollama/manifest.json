@@ -1,0 +1,85 @@
+{
+  "id": "ollama",
+  "display_name": "Ollama",
+  "discover": {
+    "processes": [
+      {
+        "name": "ollama",
+        "name_regex": "^ollama"
+      }
+    ],
+    "path": [
+      {
+        "command": "ollama"
+      }
+    ],
+    "install_dirs": [
+      {
+        "path": "${LOCALAPPDATA}/Programs/Ollama",
+        "exists_file": "ollama.exe"
+      },
+      {
+        "path": "/usr/local/bin",
+        "exists_file": "ollama"
+      }
+    ],
+    "ports": [
+      {
+        "host": "127.0.0.1",
+        "port": 11434,
+        "protocol": "http",
+        "probe_path": "/api/tags",
+        "role": "primary"
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 12434,
+        "protocol": "http",
+        "probe_path": "/api/tags",
+        "role": "fallback"
+      }
+    ]
+  },
+  "endpoint": {
+    "transport": "http",
+    "adapter": "openai-compatible",
+    "base_url_template": "http://127.0.0.1:${port}/v1",
+    "openai_compatible": true,
+    "paths": {
+      "tags": "/api/tags",
+      "models": "/v1/models",
+      "chat": "/v1/chat/completions"
+    }
+  },
+  "auth": {
+    "mode": "none",
+    "auth_ref": "OLLAMA_API_KEY",
+    "user_prompt": "本机 Ollama 通常不必填密钥。若网关要求密钥，只把变量名 OLLAMA_API_KEY 写入配置，把值放进环境变量。"
+  },
+  "probe": {
+    "method": "http_get",
+    "path": "/api/tags",
+    "ok_when": "status_2xx",
+    "timeout_ms": 1000,
+    "live_default": false
+  },
+  "safety": {
+    "may_restart": false,
+    "may_kill": false,
+    "may_bind_port": false,
+    "may_start_if_stopped": false,
+    "do_not_disturb": [
+      "ollama"
+    ]
+  },
+  "notes": "Port 12434 is a declared fallback only if 11434 is down (Open WebUI pattern). GET /api/tags may list model names on the discovery record; that is not channel tool verification and not chat_bridge=ok. Do not start Ollama if it is stopped.",
+  "catalog": {
+    "method": "http_get",
+    "paths": [
+      "/api/tags",
+      "/v1/models"
+    ],
+    "timeout_ms": 1000,
+    "note": "GET /api/tags then /v1/models is inventory, not chat_bridge=ok."
+  }
+}

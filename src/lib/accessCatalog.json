@@ -1,0 +1,544 @@
+{
+  "checked": "2026-11-13",
+  "entries": [
+    {
+      "id": "codex",
+      "name": "Codex CLI",
+      "category": "编码智能体",
+      "method": "cli",
+      "docs": "https://github.com/openai/codex",
+      "userAction": "安装并登录 Codex CLI；版本检查后，主动派发小任务才能验证实际执行。",
+      "checked": "2026-11-13",
+      "command": "codex",
+      "args": [
+        "--version"
+      ],
+      "verification": "仅验证本机 CLI 可启动并返回版本；不验证登录或执行任务"
+    },
+    {
+      "id": "claude",
+      "name": "Claude Code",
+      "category": "编码智能体",
+      "method": "cli",
+      "docs": "https://docs.anthropic.com/en/docs/claude-code/cli-usage",
+      "userAction": "安装 Claude Code 并完成官方登录或 API 配置；可通过非交互 CLI / Agent SDK 接入。",
+      "checked": "2026-11-13",
+      "command": "claude",
+      "args": [
+        "--version"
+      ],
+      "verification": "仅验证本机 CLI 可启动并返回版本；不验证登录或执行任务"
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor CLI",
+      "category": "编码智能体",
+      "method": "cli",
+      "docs": "https://cursor.com/docs/cli/overview",
+      "userAction": "安装官方 Cursor CLI 并登录；仅安装 Cursor 编辑器不代表安装了 CLI。当前探测命令为 agent，请核对所装版本。",
+      "checked": "2026-11-13",
+      "command": "agent",
+      "args": [
+        "--version"
+      ],
+      "verification": "仅验证本机 CLI 可启动并返回版本；不验证登录或执行任务"
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini CLI",
+      "category": "编码智能体",
+      "method": "cli",
+      "docs": "https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/headless.md",
+      "userAction": "安装 Gemini CLI；按官方说明完成登录或 API Key 配置，再使用 headless 模式。",
+      "checked": "2026-11-13",
+      "command": "gemini",
+      "args": [
+        "--version"
+      ],
+      "verification": "仅验证本机 CLI 可启动并返回版本；不验证登录或执行任务"
+    },
+    {
+      "id": "qwen",
+      "name": "Qwen Code",
+      "category": "编码智能体",
+      "method": "cli",
+      "docs": "https://github.com/QwenLM/qwen-code",
+      "userAction": "安装 Qwen Code 并配置官方支持的认证；可用 headless CLI。",
+      "checked": "2026-11-13",
+      "command": "qwen",
+      "args": [
+        "--version"
+      ],
+      "verification": "仅验证本机 CLI 可启动并返回版本；不验证登录或执行任务"
+    },
+    {
+      "id": "kimi",
+      "name": "Kimi Code CLI",
+      "category": "编码智能体",
+      "method": "cli",
+      "docs": "https://github.com/MoonshotAI/kimi-cli",
+      "userAction": "安装 Kimi CLI 并登录；官方 CLI 提供 ACP，需后续接入协议会话验证。",
+      "checked": "2026-11-13",
+      "command": "kimi",
+      "args": [
+        "--version"
+      ],
+      "verification": "仅验证本机 CLI 可启动并返回版本；不验证登录或执行任务"
+    },
+    {
+      "id": "copilot",
+      "name": "GitHub Copilot CLI",
+      "category": "编码智能体",
+      "method": "cli",
+      "docs": "https://docs.github.com/en/copilot/how-tos/copilot-cli/automate-copilot-cli/run-cli-programmatically",
+      "userAction": "安装 Copilot CLI，登录 GitHub 并确认账号可用；程序化调用与 IDE 插件是不同入口。",
+      "checked": "2026-11-13",
+      "command": "copilot",
+      "args": [
+        "--version"
+      ],
+      "verification": "仅验证本机 CLI 可启动并返回版本；不验证登录或执行任务"
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://github.com/ollama/ollama/blob/main/docs/api.md",
+      "userAction": "启动 Ollama 服务；目录为空时按需下载模型。服务端口改变时填写本地地址。",
+      "checked": "2026-11-13",
+      "base": "http://127.0.0.1:11434",
+      "path": "/api/tags",
+      "shape": "ollama",
+      "auth": "optional",
+      "verification": "只读服务/模型目录验证，不会生成内容或下载模型"
+    },
+    {
+      "id": "lmstudio",
+      "name": "LM Studio",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://lmstudio.ai/docs/developer/core/server",
+      "userAction": "在 Developer 中启动本地 API Server；如开启认证，填写该服务的 API Token。",
+      "checked": "2026-11-13",
+      "base": "http://127.0.0.1:1234",
+      "path": "/v1/models",
+      "shape": "models",
+      "auth": "optional",
+      "verification": "只读服务/模型目录验证，不会生成内容或下载模型"
+    },
+    {
+      "id": "open-webui",
+      "name": "Open WebUI",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://docs.openwebui.com/reference/api-endpoints/",
+      "userAction": "确认部署地址与端口，在账号设置中启用/创建 API Key；端口以实际部署为准。",
+      "checked": "2026-11-13",
+      "base": "http://127.0.0.1:3000",
+      "path": "/api/models",
+      "shape": "models",
+      "auth": "optional",
+      "verification": "只读服务/模型目录验证，不会生成内容或下载模型"
+    },
+    {
+      "id": "anythingllm",
+      "name": "AnythingLLM",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://docs.anythingllm.com/features/api",
+      "userAction": "在设置中创建开发者 API Key，查看实例 /api/docs 确认 API 可用；桌面版是否开放以当前版本为准。",
+      "checked": "2026-11-13",
+      "base": "http://127.0.0.1:3001",
+      "path": "/api/v1/auth",
+      "shape": "anything",
+      "auth": "optional",
+      "verification": "只读服务/模型目录验证，不会生成内容或下载模型"
+    },
+    {
+      "id": "comfyui",
+      "name": "ComfyUI",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://docs.comfy.org/development/comfyui-server/comms_routes",
+      "userAction": "启动 ComfyUI 后端，填写实际监听地址；工作流执行还需要模型及 API 格式工作流。",
+      "checked": "2026-11-13",
+      "base": "http://127.0.0.1:8188",
+      "path": "/system_stats",
+      "shape": "comfy",
+      "auth": "optional",
+      "verification": "只读服务/模型目录验证，不会生成内容或下载模型"
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode Server",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://opencode.ai/docs/server/",
+      "userAction": "手动启动官方 opencode serve；如设置了服务密码，应使用支持该认证方式的接入，当前检查不发送 Basic 凭据。",
+      "checked": "2026-11-13",
+      "base": "http://127.0.0.1:4096",
+      "path": "/global/health",
+      "shape": "opencode",
+      "auth": "optional",
+      "verification": "只读服务/模型目录验证，不会生成内容或下载模型"
+    },
+    {
+      "id": "llamacpp",
+      "name": "llama.cpp Server",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://github.com/ggml-org/llama.cpp/tree/master/tools/server",
+      "userAction": "启动 llama-server 并加载模型；有认证时填写服务 API Key，端口以启动参数为准。",
+      "checked": "2026-11-13",
+      "base": "http://127.0.0.1:8080",
+      "path": "/health",
+      "shape": "llama",
+      "auth": "optional",
+      "verification": "只读服务/模型目录验证，不会生成内容或下载模型"
+    },
+    {
+      "id": "deepseek-api",
+      "name": "DeepSeek API",
+      "category": "云端模型 API",
+      "method": "http",
+      "docs": "https://api-docs.deepseek.com/en/",
+      "userAction": "在 DeepSeek 开放平台生成 API Key，确认 API 账户可用；网页/App 登录不能代替 API Key。",
+      "checked": "2026-11-13",
+      "base": "https://api.deepseek.com",
+      "path": "/models",
+      "shape": "models",
+      "auth": "required",
+      "verification": "用户点击才向所示官方域名发送模型目录请求；目录成功不代表生成或额度已验证"
+    },
+    {
+      "id": "qwen-api",
+      "name": "千问 / 百炼 API",
+      "category": "云端模型 API",
+      "method": "http",
+      "docs": "https://help.aliyun.com/zh/model-studio/qwen-api-via-openai-chat-completions",
+      "userAction": "在百炼开通模型并创建对应地域 API Key；本项固定使用中国内地地址，其他地域暂不支持自定义云域名。",
+      "checked": "2026-11-13",
+      "base": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "path": "/models",
+      "shape": "models",
+      "auth": "required",
+      "verification": "用户点击才向所示官方域名发送模型目录请求；目录成功不代表生成或额度已验证"
+    },
+    {
+      "id": "doubao",
+      "name": "豆包桌面",
+      "category": "桌面客户端",
+      "method": "existing",
+      "docs": "https://www.doubao.com",
+      "userAction": "可以发现安装与进程；当前项目的 CDP 适配器需要特定调试接口，普通桌面登录不等于可调用。",
+      "checked": "2026-11-13",
+      "verification": "使用现有实机探测；不自动打开远程调试",
+      "alternative": "doubao-api"
+    },
+    {
+      "id": "workbuddy",
+      "name": "WorkBuddy",
+      "category": "编码智能体",
+      "method": "existing",
+      "docs": "https://www.codebuddy.ai",
+      "userAction": "保持 WorkBuddy 桌面登录即可；桌面投递不需要 WB_TOKEN。只有独立公开 Gateway 才有自己的服务密码。无需修改设备连接、账号或完全访问设置。",
+      "checked": "2026-11-13",
+      "verification": "桌面投递与公开 Gateway 分开显示；没有公开 Gateway 时不要求补填凭据，实时目录与回复回读尚未支持"
+    },
+    {
+      "id": "doubao-api",
+      "name": "豆包 / 火山方舟 API",
+      "category": "云端模型 API",
+      "method": "guide",
+      "docs": "https://docs.volcengine.com/docs/ark/quick-start?lang=zh",
+      "userAction": "在方舟创建 API Key 并开通模型或推理接入点；按量 API 与 Coding Plan 的地址和权限不同。",
+      "checked": "2026-11-13",
+      "verification": "官方模型 API 可用；本项目尚未实现该服务的可靠目录验证，不能用它验证豆包桌面登录"
+    },
+    {
+      "id": "glm-api",
+      "name": "GLM / 智谱 API",
+      "category": "云端模型 API",
+      "method": "guide",
+      "docs": "https://docs.bigmodel.cn/cn/api/introduction",
+      "userAction": "创建智谱开放平台 API Key，选择普通 API 或 Coding Plan 的正确地址。",
+      "checked": "2026-11-13",
+      "verification": "官方 API 接入说明已接入；平台目录与认证探测待实现"
+    },
+    {
+      "id": "moonshot-api",
+      "name": "Kimi / Moonshot API",
+      "category": "云端模型 API",
+      "method": "guide",
+      "docs": "https://platform.moonshot.cn/docs",
+      "userAction": "在 Moonshot 开放平台配置 API Key；Kimi 网页账号和 Kimi Code 授权不能直接视为通用 API 授权。",
+      "checked": "2026-11-13",
+      "verification": "开放平台 API 与 Kimi CLI 分开接入；本项尚未实现在线验证"
+    },
+    {
+      "id": "chatgpt",
+      "name": "ChatGPT 桌面 / 网页",
+      "category": "桌面客户端",
+      "method": "guide",
+      "docs": "https://platform.openai.com/docs",
+      "userAction": "无需向操作台填写 ChatGPT 登录密码。若希望程序化调用模型，使用独立模型 API 或 Codex 接入方式。",
+      "checked": "2026-11-13",
+      "verification": "本项目未确认该桌面客户端提供通用本地服务端 API；不能因为发现程序就验证它可调用"
+    },
+    {
+      "id": "claude-desktop",
+      "name": "Claude 桌面",
+      "category": "桌面客户端",
+      "method": "guide",
+      "docs": "https://modelcontextprotocol.io/docs/develop/connect-local-servers",
+      "userAction": "桌面端配置 MCP 是让 Claude 使用外部工具；程序化调用应使用 Claude Code / Agent SDK 或官方模型 API。",
+      "checked": "2026-11-13",
+      "verification": "MCP 客户端不等于可供操作台调用的 MCP 服务端"
+    },
+    {
+      "id": "cherry-studio",
+      "name": "Cherry Studio",
+      "category": "桌面客户端",
+      "method": "guide",
+      "docs": "https://github.com/CherryHQ/cherry-studio",
+      "userAction": "查看当前版本官方文档是否有对外服务；仅配置模型供应商不能让其他软件调用 Cherry Studio。",
+      "checked": "2026-11-13",
+      "verification": "已知是多模型客户端；本项目未确认通用入站接口，暂不验证"
+    },
+    {
+      "id": "trae",
+      "name": "Trae",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://www.trae.ai",
+      "userAction": "查看当前版本官方接入文档；安装编辑器及登录不等于已提供外部自动化接口。",
+      "checked": "2026-11-13",
+      "verification": "接口待核实；不猜测端口、不注入调试接口"
+    },
+    {
+      "id": "windsurf",
+      "name": "Windsurf",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://docs.windsurf.com",
+      "userAction": "MCP 配置用于让编辑器访问工具；外部调用需要官方支持的 Agent 接口或专用适配器。",
+      "checked": "2026-11-13",
+      "verification": "尚未实现对外任务接口验证"
+    },
+    {
+      "id": "cline",
+      "name": "Cline",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://github.com/cline/cline",
+      "userAction": "若使用 CLI / ACP，请按官方当前版本安装并配置模型提供商；IDE 扩展不等于 CLI 已安装。",
+      "checked": "2026-11-13",
+      "verification": "官方 CLI/ACP 入口需后续增加握手和认证验证"
+    },
+    {
+      "id": "roo-code",
+      "name": "Roo Code",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://github.com/RooCodeInc/Roo-Code",
+      "userAction": "先确认安装版本和官方自动化能力；配置其模型提供商不等于开放入站接口。",
+      "checked": "2026-11-13",
+      "verification": "扩展发现已支持；外部调用尚未验证"
+    },
+    {
+      "id": "aider",
+      "name": "Aider",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://aider.chat/docs/scripting.html",
+      "userAction": "按官方脚本方式安装 Aider 并配置模型提供商；任务执行可能修改工程文件。",
+      "checked": "2026-11-13",
+      "verification": "脚本接入方式已登记；版本/任务适配器尚未实现"
+    },
+    {
+      "id": "mcp",
+      "name": "通用 MCP 服务",
+      "category": "协议工具",
+      "method": "guide",
+      "docs": "https://github.com/modelcontextprotocol/inspector",
+      "userAction": "准备服务端启动命令或 HTTP 地址及官方认证方式；先用 Inspector 测试 initialize 和 tools/list。",
+      "checked": "2026-11-13",
+      "verification": "协议说明已接入；本项目尚未实现通用 MCP 握手，不执行任意工具"
+    },
+    {
+      "id": "acp",
+      "name": "通用 ACP 智能体",
+      "category": "协议工具",
+      "method": "guide",
+      "docs": "https://github.com/agentclientprotocol/registry",
+      "userAction": "从官方注册表选择支持当前系统的智能体，按文档完成安装与登录。",
+      "checked": "2026-11-13",
+      "verification": "注册表不等于本机已安装；本项目尚未实现通用 ACP 适配器"
+    },
+    {
+      "id": "jan",
+      "name": "Jan 本地 API",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://docs.jan.ai/desktop/api-preference",
+      "userAction": "在 Jan 中启动 Local API Server，配置 API Key 并确保模型已下载；API Server 与桌面聊天是不同入口。",
+      "checked": "2026-11-13",
+      "base": "http://127.0.0.1:1337",
+      "path": "/v1/models",
+      "shape": "models",
+      "auth": "optional",
+      "verification": "只读模型目录验证；不验证生成、工具调用或任务执行"
+    },
+    {
+      "id": "gpt4all",
+      "name": "GPT4All 本地 API",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://docs.gpt4all.io/gpt4all_api_server/home.html",
+      "userAction": "在设置中打开 Enable Local Server，确认模型可用；LocalDocs 的 API 能力与桌面界面可能不同。",
+      "checked": "2026-11-13",
+      "base": "http://127.0.0.1:4891",
+      "path": "/v1/models",
+      "shape": "models",
+      "auth": "optional",
+      "verification": "只读模型目录验证；不验证生成、工具调用或任务执行"
+    },
+    {
+      "id": "vllm",
+      "name": "vLLM",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html",
+      "base": "http://127.0.0.1:8000",
+      "path": "/v1/models",
+      "shape": "models",
+      "auth": "optional",
+      "checked": "2026-11-13",
+      "userAction": "手动启动模型服务并加载模型，按实际部署填写本机端口；配置 API Key 时在本次验证中提供。WSL/容器端口需要映射到本机。",
+      "verification": "只读模型目录验证；不验证生成与任务执行"
+    },
+    {
+      "id": "sglang",
+      "name": "SGLang",
+      "category": "本地服务",
+      "method": "http",
+      "docs": "https://github.com/sgl-project/sglang",
+      "base": "http://127.0.0.1:30000",
+      "path": "/v1/models",
+      "shape": "models",
+      "auth": "optional",
+      "checked": "2026-11-13",
+      "userAction": "手动启动模型服务并加载模型，按实际部署填写本机端口；配置 API Key 时在本次验证中提供。WSL/容器端口需要映射到本机。",
+      "verification": "只读模型目录验证；不验证生成与任务执行"
+    },
+    {
+      "id": "dify",
+      "name": "Dify",
+      "category": "工作流平台",
+      "method": "guide",
+      "docs": "https://github.com/langgenius/dify",
+      "userAction": "发布应用，在应用的 API 页面获取专用 API Key 和实际地址；应用 API 与后台管理接口不同。",
+      "checked": "2026-11-13",
+      "verification": "官方项目/协议入口已登记；当前项目尚未实现此项专用验证和任务派发"
+    },
+    {
+      "id": "n8n",
+      "name": "n8n",
+      "category": "工作流平台",
+      "method": "guide",
+      "docs": "https://docs.n8n.io/api/authentication/",
+      "userAction": "在设置中创建 API Key；工作流触发需要单独启用 Webhook 或官方执行入口，不要把后台管理 API 当成模型 API。",
+      "checked": "2026-11-13",
+      "verification": "官方项目/协议入口已登记；当前项目尚未实现此项专用验证和任务派发"
+    },
+    {
+      "id": "goose",
+      "name": "Goose",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://github.com/block/goose",
+      "userAction": "安装官方 CLI 并配置模型提供商；ACP 适配需按当前版本文档核对。",
+      "checked": "2026-11-13",
+      "verification": "官方项目/协议入口已登记；当前项目尚未实现此项专用验证和任务派发"
+    },
+    {
+      "id": "continue",
+      "name": "Continue",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://github.com/continuedev/continue",
+      "userAction": "区分 IDE 扩展与 CLI，配置模型提供商和认证；MCP 客户端配置不代表开放入站接口。",
+      "checked": "2026-11-13",
+      "verification": "官方项目/协议入口已登记；当前项目尚未实现此项专用验证和任务派发"
+    },
+    {
+      "id": "codebuddy",
+      "name": "CodeBuddy Code",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://github.com/agentclientprotocol/registry",
+      "userAction": "按官方 ACP 注册表安装适用系统的 CodeBuddy Code，完成登录；与 WorkBuddy 桌面入口分别验证。",
+      "checked": "2026-11-13",
+      "verification": "官方项目/协议入口已登记；当前项目尚未实现此项专用验证和任务派发"
+    },
+    {
+      "id": "qoder",
+      "name": "Qoder CLI",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://github.com/agentclientprotocol/registry",
+      "userAction": "按官方 ACP 注册表和 Qoder 文档安装 CLI 并登录；仅安装编辑器不足以验证 CLI。",
+      "checked": "2026-11-13",
+      "verification": "官方项目/协议入口已登记；当前项目尚未实现此项专用验证和任务派发"
+    },
+    {
+      "id": "antigravity",
+      "name": "Google Antigravity",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://github.com/agentclientprotocol/registry",
+      "userAction": "先核对 ACP 注册表中当前平台的分发方式并完成官方登录；本项目尚未实现它的握手。",
+      "checked": "2026-11-13",
+      "verification": "官方项目/协议入口已登记；当前项目尚未实现此项专用验证和任务派发"
+    },
+    {
+      "id": "augment",
+      "name": "Augment / Auggie",
+      "category": "编码智能体",
+      "method": "guide",
+      "docs": "https://github.com/agentclientprotocol/registry",
+      "userAction": "确认安装 Auggie CLI 并完成账号配置；IDE 扩展与 CLI 接入不同。",
+      "checked": "2026-11-13",
+      "verification": "官方项目/协议入口已登记；当前项目尚未实现此项专用验证和任务派发"
+    },
+    {
+      "id": "litellm",
+      "name": "LiteLLM 本地统一网关",
+      "base": "http://127.0.0.1:4000",
+      "docs": "https://github.com/BerriAI/litellm",
+      "userAction": "先启动本地 LiteLLM 并配置上游模型；如启用认证填写网关 Key。网关不会替代上游账号、权限或额度。",
+      "category": "本地模型网关",
+      "method": "http",
+      "path": "/v1/models",
+      "shape": "models",
+      "auth": "optional",
+      "checked": "2026-11-13",
+      "verification": "验证 OpenAI 兼容模型目录，不证明网关品牌身份、不代表模型生成或任务已验证"
+    },
+    {
+      "id": "olla",
+      "name": "Olla 本地模型路由",
+      "base": "http://127.0.0.1:40114/olla/proxy",
+      "docs": "https://github.com/thushan/olla",
+      "userAction": "先启动 Olla 并配置可用的模型后端；地址需要保留 /olla/proxy 前缀。只启动网关但没有后端不能生成回复。",
+      "category": "本地模型网关",
+      "method": "http",
+      "path": "/v1/models",
+      "shape": "models",
+      "auth": "optional",
+      "checked": "2026-11-13",
+      "verification": "验证 OpenAI 兼容模型目录，不证明网关品牌身份、不代表模型生成或任务已验证"
+    }
+  ]
+}

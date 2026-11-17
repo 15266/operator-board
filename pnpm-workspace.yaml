@@ -1,0 +1,11 @@
+# Reuse the user's installed Codex CLI via CODEX_PATH; avoid a second CLI binary.
+ignoredOptionalDependencies:
+  - '@openai/codex-linux-x64'
+  - '@openai/codex-linux-arm64'
+  - '@openai/codex-darwin-x64'
+  - '@openai/codex-darwin-arm64'
+  - '@openai/codex-win32-x64'
+  - '@openai/codex-win32-arm64'
+minimumReleaseAgeExclude:
+  - '@tencent-ai/codebuddy-code@2.184.0'
+storeDir: .pnpm-store

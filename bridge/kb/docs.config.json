@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "comment": "Doc scanner config. roots are relative to the board root. doc_type is free text. No vendor names. Edit freely; new versions are only stored when sha256 changes.",
+  "roots": { "board": ".", "workspace": ".." },
+  "rules": [
+    { "root": "workspace", "glob": "ai-dispatch-test/**/ACCEPTANCE*.md", "doc_type": "验收报告" },
+    { "root": "workspace", "glob": "ai-dispatch-test/**/*验收*.md", "doc_type": "验收报告" },
+    { "root": "workspace", "glob": "ai-dispatch-test/**/*任务包*", "doc_type": "任务包" },
+    { "root": "workspace", "glob": "ai-dispatch-test/**/TASK-PACK*.md", "doc_type": "任务包" },
+    { "root": "workspace", "glob": "ai-dispatch-test/**/*汇报*.md", "doc_type": "国王汇报" },
+    { "root": "workspace", "glob": "ai-dispatch-test/**/VERTICAL-SLICE*.md", "doc_type": "设计文档" },
+    { "root": "workspace", "glob": "ai-dispatch-test/**/README.md", "doc_type": "项目说明" }
+  ],
+  "dispatch_rules": [
+    { "task_id_suffix": "::king-report", "field": "prompt", "doc_type": "国王汇报", "title": "国王汇报（发给国王的汇总）" },
+    { "task_id_suffix": "::king-report", "field": "reply", "doc_type": "国王回复", "title": "国王回复" }
+  ],
+  "max_files": 500
+}

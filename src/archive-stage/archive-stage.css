@@ -1,0 +1,224 @@
+/* Namespaced archive stage. Imported from ArchiveStage, not after rhine-refined. */
+
+.ob-archive-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #eae5e1;
+}
+
+.ob-archive-stage[data-archive-failed="true"] {
+  background: #eae5e1;
+}
+
+.ob-archive-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.ob-archive-shade {
+  pointer-events: none;
+}
+
+.workspace {
+  position: relative;
+}
+
+.workspace.is-archive-browse,
+.workspace.is-archive-detail,
+.workspace.is-archive-leaving {
+  background: transparent;
+}
+
+.workspace.is-archive-browse .workspace-bar,
+.workspace.is-archive-detail .workspace-bar,
+.workspace.is-archive-leaving .workspace-bar {
+  position: relative;
+  z-index: 2;
+  background: color-mix(in srgb, #efeae3 82%, transparent);
+  border-bottom-color: #c8c0b4;
+  color: #171713;
+}
+
+.workspace.is-archive-browse .workspace-bar h1,
+.workspace.is-archive-detail .workspace-bar h1,
+.workspace.is-archive-leaving .workspace-bar h1 {
+  color: #171713;
+}
+
+.workspace.is-archive-browse .workspace-bar h1 .title-en,
+.workspace.is-archive-detail .workspace-bar h1 .title-en,
+.workspace.is-archive-leaving .workspace-bar h1 .title-en {
+  color: #77756d;
+}
+
+.workspace.is-archive-browse .workspace-body,
+.workspace.is-archive-detail .workspace-body,
+.workspace.is-archive-leaving .workspace-body {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+.workspace.is-archive-browse .workspace-footnote,
+.workspace.is-archive-detail .workspace-footnote,
+.workspace.is-archive-leaving .workspace-footnote {
+  color: #77756d;
+}
+
+/* Paper fills used to veil the shelf array in a yellow slab. Keep
+   typography contrast only; lists sit directly on the stage. */
+.workspace.is-archive-browse .panel,
+.workspace.is-archive-browse .project-workspace,
+.workspace.is-archive-browse .empty-state,
+.workspace.is-archive-browse .channel-card,
+.workspace.is-archive-browse .project-summary-card,
+.workspace.is-archive-browse table,
+.workspace.is-archive-browse .workspace-form,
+.workspace.is-archive-browse .current-work,
+.workspace.is-archive-browse .layout,
+.workspace.is-archive-browse .motion-view-stack,
+.workspace.is-archive-detail .ob-archive-document .project-workspace,
+.workspace.is-archive-detail .ob-archive-document .interface-detail,
+.workspace.is-archive-detail .ob-archive-document .panel,
+.workspace.is-archive-detail .ob-archive-document .workspace-form,
+.workspace.is-archive-detail .ob-archive-document .empty-state,
+.workspace.is-archive-leaving .ob-archive-document .project-workspace,
+.workspace.is-archive-leaving .ob-archive-document .interface-detail,
+.workspace.is-archive-leaving .ob-archive-document .panel,
+.workspace.is-archive-leaving .ob-archive-document .workspace-form,
+.workspace.is-archive-leaving .ob-archive-document .empty-state,
+.ob-archive-paper {
+  background: transparent;
+  border-color: transparent;
+}
+
+.workspace.is-archive-browse table {
+  padding: 0;
+  background: transparent;
+}
+
+/* L2 and L3 share the same centered workspace measure. The extracted
+   cassette is a background performance and must not reserve a left column. */
+.workspace.is-archive-browse .workspace-body,
+.workspace.is-archive-detail .workspace-body,
+.workspace.is-archive-leaving .workspace-body {
+  margin-inline: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ob-archive-document {
+  min-width: 0;
+  will-change: opacity, translate;
+}
+
+.workspace.is-archive-browse .ob-rolling-title,
+.workspace.is-archive-detail .ob-rolling-title,
+.workspace.is-archive-leaving .ob-rolling-title {
+  display: inline-block;
+  vertical-align: bottom;
+  overflow: hidden;
+}
+
+/* Outline/text controls stay dark on the ivory stage. Solid ink
+   buttons (.add-channel-btn, .sidebar-create) keep their own light type. */
+.workspace.is-archive-browse .text-btn,
+.workspace.is-archive-detail .text-btn,
+.workspace.is-archive-leaving .text-btn,
+.workspace.is-archive-browse .icon-btn:not(.add-channel-btn):not(.sidebar-create),
+.workspace.is-archive-detail .icon-btn:not(.add-channel-btn):not(.sidebar-create),
+.workspace.is-archive-leaving .icon-btn:not(.add-channel-btn):not(.sidebar-create) {
+  color: #171713;
+}
+
+.workspace.is-archive-browse .add-channel-btn,
+.workspace.is-archive-browse .sidebar-create,
+.workspace.is-archive-detail .add-channel-btn,
+.workspace.is-archive-detail .sidebar-create,
+.workspace.is-archive-leaving .add-channel-btn,
+.workspace.is-archive-leaving .sidebar-create,
+.workspace.is-archive-browse .add-channel-btn .title-en,
+.workspace.is-archive-browse .sidebar-create .title-en,
+.workspace.is-archive-detail .add-channel-btn .title-en,
+.workspace.is-archive-detail .sidebar-create .title-en,
+.workspace.is-archive-leaving .add-channel-btn .title-en,
+.workspace.is-archive-leaving .sidebar-create .title-en {
+  color: var(--bg);
+}
+
+.workspace.is-archive-browse .add-channel-btn .title-en,
+.workspace.is-archive-browse .sidebar-create .title-en,
+.workspace.is-archive-detail .add-channel-btn .title-en,
+.workspace.is-archive-detail .sidebar-create .title-en,
+.workspace.is-archive-leaving .add-channel-btn .title-en,
+.workspace.is-archive-leaving .sidebar-create .title-en {
+  opacity: 0.82;
+}
+
+@media (max-width: 900px), (max-aspect-ratio: 21/20) {
+  .workspace.is-archive-detail .workspace-body,
+  .workspace.is-archive-leaving .workspace-body {
+    padding-top: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-archive-document {
+    will-change: auto;
+  }
+}
+
+.workspace.is-archive-detail .ob-archive-shade,
+.workspace.is-archive-leaving .ob-archive-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 42%, color-mix(in srgb, #ffffff 16%, transparent), transparent 64%);
+  opacity: var(--ob-detail-visibility, 0);
+}
+
+.workspace.is-archive-browse .workspace-bar,
+.workspace.is-archive-detail .workspace-bar,
+.workspace.is-archive-leaving .workspace-bar {
+  z-index: 3;
+}
+
+.workspace.is-archive-browse .workspace-body,
+.workspace.is-archive-detail .workspace-body,
+.workspace.is-archive-leaving .workspace-body {
+  z-index: 2;
+}
+
+/* Enter and leave stay locked to the cassette/camera progress so the
+   document does not vanish ahead of the array, or linger in a stale pose. */
+.workspace.is-archive-detail .ob-archive-document,
+.workspace.is-archive-leaving .ob-archive-document {
+  opacity: var(--ob-detail-visibility, 0);
+  translate: 0 calc((1 - var(--ob-detail-visibility, 0)) * 14px);
+}
+
+@media (max-width: 900px), (max-aspect-ratio: 21/20) {
+  .workspace.is-archive-detail .ob-archive-shade,
+  .workspace.is-archive-leaving .ob-archive-shade {
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 36%, color-mix(in srgb, #ffffff 14%, transparent), transparent 70%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace.is-archive-detail .ob-archive-document,
+  .workspace.is-archive-leaving .ob-archive-document {
+    opacity: 1;
+    translate: 0;
+  }
+  .workspace.is-archive-detail .ob-archive-shade,
+  .workspace.is-archive-leaving .ob-archive-shade {
+    opacity: 0.55;
+  }
+}

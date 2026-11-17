@@ -1,0 +1,607 @@
+{
+  "version": "0.3.2",
+  "roles": {
+    "host": {
+      "name": "host",
+      "capabilities": [
+        "plan",
+        "dispatch",
+        "verify",
+        "user_report",
+        "quota_failover"
+      ],
+      "teammate_hint": "self / Host bot",
+      "endpoint": null,
+      "optional": false
+    },
+    "progress": {
+      "name": "progress",
+      "capabilities": [
+        "completion_matrix",
+        "evidence_review",
+        "maintenance_digest"
+      ],
+      "teammate_hint": "Progress specialist — map to your teammate @Name",
+      "endpoint": null,
+      "optional": false
+    },
+    "improve": {
+      "name": "improve",
+      "capabilities": [
+        "prioritize",
+        "gap_analysis",
+        "p0_p1_p2"
+      ],
+      "teammate_hint": "Improve specialist — map to your teammate @Name",
+      "endpoint": null,
+      "optional": false
+    },
+    "execute": {
+      "name": "execute",
+      "capabilities": [
+        "code_change",
+        "build",
+        "minimal_task",
+        "quota_takeover"
+      ],
+      "teammate_hint": "Execute specialist — map to your teammate @Name",
+      "endpoint": null,
+      "optional": false
+    },
+    "workbuddy": {
+      "name": "workbuddy",
+      "capabilities": [
+        "cheap_info",
+        "serial_dispatch",
+        "artifact_capture"
+      ],
+      "teammate_hint": "Optional cheap serial info agent",
+      "endpoint": null,
+      "optional": true
+    },
+    "unreal_box": {
+      "name": "unreal_box",
+      "capabilities": [
+        "ue_cli",
+        "pie",
+        "screenshot",
+        "asset_inspect"
+      ],
+      "teammate_hint": "Optional device/engine CLI adapter — not a project archive",
+      "endpoint": null,
+      "optional": true
+    },
+    "desktop": {
+      "name": "desktop",
+      "capabilities": [
+        "gui",
+        "browser",
+        "vision",
+        "click"
+      ],
+      "teammate_hint": "Optional desktop/GUI agent",
+      "endpoint": null,
+      "optional": true
+    },
+    "external_codex": {
+      "name": "external_codex",
+      "capabilities": [
+        "codex_cli",
+        "maintenance_loop",
+        "codex_exec"
+      ],
+      "teammate_hint": "Optional external coding CLI (Codex / OpenHands ACP / etc.)",
+      "endpoint": null,
+      "optional": true
+    }
+  },
+  "dispatch_plan": {
+    "goal": "Ship one minimal orchestrator dashboard panel for operator visibility",
+    "quota_exhausted": false,
+    "project_id": "YOUR_PROJECT_ID",
+    "project_root": "<PLACEHOLDER>/path/to/project",
+    "protocol_note": "Inside Grok Bot use SendToAgent; externally prefer A2A/ACP. When quota_exhausted=true, never schedule external_codex.",
+    "steps": [
+      {
+        "order": 1,
+        "role": "host",
+        "action": "read_context",
+        "brief": "Read AGENTS.md and latest maintenance notes; frame goal",
+        "status": "done"
+      },
+      {
+        "order": 2,
+        "role": "progress",
+        "action": "completion_matrix_with_evidence",
+        "brief": "Assess done/partial/unverified/human-only for the goal",
+        "teammate_hint": "Progress specialist",
+        "status": "done"
+      },
+      {
+        "order": 3,
+        "role": "improve",
+        "action": "rank_gaps_p0_p1_p2",
+        "brief": "Propose one minimal next executable task",
+        "teammate_hint": "Improve specialist",
+        "status": "active"
+      },
+      {
+        "order": 4,
+        "role": "workbuddy",
+        "action": "cheap_info_gather",
+        "brief": "Serial WorkBuddy probe (600s, no editor kill). Gather facts.",
+        "policy": "wb_dispatch_policy",
+        "teammate_hint": "Cheap serial info agent",
+        "status": "pending"
+      },
+      {
+        "order": 5,
+        "role": "external_codex",
+        "action": "one_minimal_executable_task",
+        "brief": "Prefer Codex maintenance loop if healthy; one minimal task",
+        "failover_to": "execute",
+        "teammate_hint": "External coding CLI",
+        "status": "pending"
+      },
+      {
+        "order": 6,
+        "role": "host",
+        "action": "verify_evidence_and_report_user",
+        "brief": "Validate separated compile / automated / visual_pie / human lanes; no fake feel; report user.",
+        "status": "pending"
+      }
+    ]
+  },
+  "dispatch_plan_quota": {
+    "goal": "Same goal under external CLI quota exhaustion",
+    "quota_exhausted": true,
+    "project_id": "YOUR_PROJECT_ID",
+    "project_root": "<PLACEHOLDER>/path/to/project",
+    "protocol_note": "When quota_exhausted=true, never schedule external_codex.",
+    "steps": [
+      {
+        "order": 1,
+        "role": "host",
+        "action": "read_context",
+        "brief": "Read context; frame goal",
+        "status": "done"
+      },
+      {
+        "order": 2,
+        "role": "progress",
+        "action": "completion_matrix_with_evidence",
+        "brief": "Assess completion matrix",
+        "status": "done"
+      },
+      {
+        "order": 3,
+        "role": "improve",
+        "action": "rank_gaps_p0_p1_p2",
+        "brief": "Propose one minimal next task",
+        "status": "done"
+      },
+      {
+        "order": 4,
+        "role": "workbuddy",
+        "action": "cheap_info_gather",
+        "brief": "SKIPPED when quota_exhausted (stay lean)",
+        "status": "skipped"
+      },
+      {
+        "order": 5,
+        "role": "execute",
+        "action": "one_minimal_executable_task",
+        "brief": "Quota exhausted: skip Codex; Grok execute takeover",
+        "failover_to": null,
+        "skip_roles": [
+          "external_codex"
+        ],
+        "status": "active"
+      },
+      {
+        "order": 6,
+        "role": "host",
+        "action": "verify_evidence_and_report_user",
+        "brief": "Validate evidence lanes; report user",
+        "status": "pending"
+      }
+    ]
+  },
+  "round_brief": {
+    "round": "demo-R1",
+    "quota_exhausted": false,
+    "goal": "Make the orchestrator operator board readable offline with mock MCP shapes",
+    "path": "<PLACEHOLDER>/path/to/project · machine: demo-host",
+    "success": "ui/ installs; panels including Channels render; mock JSON matches MCP tool shapes; 添加通道 can register kind + endpoint",
+    "not_to_do": [
+      "Do not ship Unreal/fdz project content",
+      "Do not auto-pass lane=human",
+      "Do not invent feel / NO_MORE_ISSUES without proof",
+      "Do not kill a live editor/session for cleanup"
+    ],
+    "evidence_paths": [
+      "ui/README.md",
+      "ui/public/mock/dashboard.json",
+      "ui/dist/ (after npm run build)"
+    ],
+    "executor": "external_codex (Codex) with failover to execute",
+    "task": {
+      "id": "item-demo-p0",
+      "title": "Render Roles board from schema/roles.example.json",
+      "priority": "P0",
+      "lane": "visual_pie",
+      "status": "open",
+      "notes": "Mock lane visual_pie here means UI/integration visual check, not UE PIE."
+    }
+  },
+  "open_items": [
+    {
+      "id": "item-demo-p0",
+      "title": "Render Roles board from schema/roles.example.json",
+      "priority": "P0",
+      "lane": "visual_pie",
+      "status": "open",
+      "notes": "Picked by next_minimal_task (skips human)."
+    },
+    {
+      "id": "item-demo-p1",
+      "title": "Wire evidence validator demo with fake-feel reject",
+      "priority": "P1",
+      "lane": "automated",
+      "status": "open",
+      "notes": "Show validate_evidence_report errors."
+    },
+    {
+      "id": "item-demo-human",
+      "title": "Human operator walkthrough of the dashboard",
+      "priority": "P2",
+      "lane": "human",
+      "status": "open",
+      "notes": "Never auto-picked; leave UNVERIFIED."
+    }
+  ],
+  "evidence_samples": [
+    {
+      "label": "合法分轨（PASS 结构）",
+      "claims": {
+        "compile": "pass",
+        "automated": "skipped",
+        "visual_pie": "pass",
+        "human": "UNVERIFIED"
+      },
+      "report_text": "Compile=pass (npm run build). Automated=skipped. Visual/PIE=pass (dashboard screenshot). Human=UNVERIFIED.",
+      "validation": {
+        "ok": true,
+        "lanes_found": {
+          "compile": true,
+          "automated": true,
+          "visual_pie": true,
+          "human": true
+        },
+        "warnings": [],
+        "errors": [],
+        "rules": {
+          "separate_lanes": [
+            "compile",
+            "automated",
+            "visual_pie",
+            "human"
+          ],
+          "no_fake_feel": true
+        },
+        "claims": {
+          "compile": "pass",
+          "automated": "skipped",
+          "visual_pie": "pass",
+          "human": "UNVERIFIED"
+        }
+      }
+    },
+    {
+      "label": "伪造手感（REJECT）",
+      "claims": {
+        "compile": "pass",
+        "automated": "pass",
+        "visual_pie": "pass",
+        "human": "pass",
+        "feel": "手感好了"
+      },
+      "report_text": "All passed. Feel OK. NO_MORE_ISSUES. 手感好了.",
+      "validation": {
+        "ok": false,
+        "lanes_found": {
+          "compile": true,
+          "automated": true,
+          "visual_pie": true,
+          "human": true
+        },
+        "warnings": [
+          "Report may be collapsing lanes into a single 'all passed' claim; keep them separate."
+        ],
+        "errors": [
+          "claims.human='pass' is not allowed without a real human playtest; use UNVERIFIED.",
+          "Fake feel language detected (feel / 手感 / NO_MORE_ISSUES) without human proof."
+        ],
+        "rules": {
+          "separate_lanes": [
+            "compile",
+            "automated",
+            "visual_pie",
+            "human"
+          ],
+          "no_fake_feel": true
+        },
+        "claims": {
+          "compile": "pass",
+          "automated": "pass",
+          "visual_pie": "pass",
+          "human": "pass",
+          "feel": "手感好了"
+        }
+      }
+    }
+  ],
+  "events": [
+    {
+      "ts": "2026-11-10T01:10:00Z",
+      "kind": "dispatch_plan_made",
+      "role": "host",
+      "detail": "make_dispatch_plan goal=dashboard panels"
+    },
+    {
+      "ts": "2026-11-10T01:12:00Z",
+      "kind": "task_picked",
+      "role": "improve",
+      "detail": {
+        "id": "item-demo-p0",
+        "priority": "P0",
+        "lane": "visual_pie"
+      }
+    },
+    {
+      "ts": "2026-11-10T01:15:00Z",
+      "kind": "evidence_validated",
+      "role": "host",
+      "detail": "validate_evidence_report ok=true (demo clean sample)"
+    },
+    {
+      "ts": "2026-11-10T01:18:00Z",
+      "kind": "codex_probe",
+      "role": "external_codex",
+      "detail": "codex_ingest_probe stub: cli_ok=true auth_ok=true"
+    },
+    {
+      "ts": "2026-11-10T01:20:00Z",
+      "kind": "quota_note",
+      "role": "host",
+      "detail": "quota_exhausted=false; external_codex still scheduled"
+    },
+    {
+      "ts": "2026-11-06T08:40:00Z",
+      "kind": "channel_chat_bridge",
+      "role": "workbuddy",
+      "detail": "WorkBuddy session「Codex GUI协同测试确认」chat_ok；回复：你好，Codex，GUI对话已收到。"
+    },
+    {
+      "ts": "2026-11-06T08:42:00Z",
+      "kind": "channel_chat_bridge",
+      "role": "desktop",
+      "detail": "豆包桌面桥 chat_ok；screenshot-verify fail（窗口识别错误）。插件未验证。"
+    },
+    {
+      "ts": "2026-11-06T08:45:00Z",
+      "kind": "channel_inventory",
+      "role": "workbuddy",
+      "detail": "WorkBuddy tool_inventory：9 项 MCP 配置；tool_verify：仅 unreal_box 只读此前已验证（1/9）。"
+    },
+    {
+      "ts": "2026-11-06T08:48:00Z",
+      "kind": "channel_note",
+      "role": "external_codex",
+      "detail": "能对话 ≠ 能调用全部插件；未实现三方自动同步；优先按功能调用，屏幕控制是最后手段。"
+    }
+  ],
+  "codex_link": {
+    "machine_id": "demo-machine",
+    "machine_label": "Demo CLI host",
+    "cli_path": "<PLACEHOLDER>/codex",
+    "cli_ok": true,
+    "auth_ok": true,
+    "auth_path": "<PLACEHOLDER>/.codex/auth.json",
+    "auth_exists": true,
+    "version": "0.0.0-mock",
+    "login_line": "logged_in=true (mock)",
+    "mode": "app-server",
+    "app_server_ok": true,
+    "app_server_version": "mock-1",
+    "daemon_ok": true,
+    "processes": [
+      "codex-app-server (mock)"
+    ],
+    "last_probe_at": "2026-11-10T01:18:00Z",
+    "notes": "UI stub — mock OK. Real link requires host-side codex_ingest_probe.",
+    "session": "sess-mock-001",
+    "pending_outbound": null,
+    "link_verified": true,
+    "quota_exhausted": false,
+    "stub_status": "ok"
+  },
+  "external_channels": [
+    {
+      "id": "workbuddy",
+      "title": "WorkBuddy",
+      "title_en": "WorkBuddy",
+      "kind": "workbuddy",
+      "endpoint": "desktop://WorkBuddy",
+      "optional": true,
+      "product": "WorkBuddy V5.9.3",
+      "source": "catalog",
+      "layers": [
+        {
+          "kind": "chat_bridge",
+          "status": "ok",
+          "summary": "打开「Codex GUI协同测试确认」，能看到发出的消息和它的回复。"
+        },
+        {
+          "kind": "tool_inventory",
+          "status": "partial",
+          "summary": "已查到 9 项 MCP 配置，列入清单仍是声称 claimed。"
+        },
+        {
+          "kind": "tool_verify",
+          "status": "partial",
+          "summary": "仅 1/9 曾验证：虚幻盒子 unreal_box 只读调用；其余尚未逐项验证。"
+        },
+        {
+          "kind": "quota",
+          "status": "unverified",
+          "summary": "本轮未探测到配额状态。"
+        }
+      ],
+      "tools": [
+        {
+          "id": "unreal_box",
+          "name": "虚幻盒子（只读）",
+          "api_name": "unreal_box",
+          "claimed": true,
+          "verified": true,
+          "note": "此前已验证只读调用"
+        },
+        {
+          "id": "wb-mcp-rest",
+          "name": "其余 8 项 MCP 配置",
+          "api_name": "mcp-config-rest",
+          "claimed": true,
+          "verified": false,
+          "note": "已出现在 9 项配置清单中，尚未逐项验证"
+        }
+      ],
+      "inventory_claimed": 9,
+      "inventory_verified": 1,
+      "test_session": "Codex GUI协同测试确认",
+      "test_reply": "你好，Codex，GUI对话已收到。",
+      "screenshot_verify": null,
+      "notes": "对话桥已通，不能据此认为 9 项 MCP 已全部可调用。清单里只有 unreal_box 只读曾验证。 本条来自 Operator Board 离线 mock，不是对你机器或厂商账号的实时探活。",
+      "last_probe_at": "2026-11-06T08:40:00Z"
+    },
+    {
+      "id": "codex",
+      "title": "Codex",
+      "title_en": "Codex",
+      "kind": "codex",
+      "endpoint": "<PLACEHOLDER>/codex",
+      "optional": true,
+      "product": "Codex CLI / app-server（mock）",
+      "source": "catalog",
+      "layers": [
+        {
+          "kind": "chat_bridge",
+          "status": "ok",
+          "summary": "可作为协同侧发消息并读回复；本页链路状态来自 mock 桩。"
+        },
+        {
+          "kind": "tool_inventory",
+          "status": "partial",
+          "summary": "本包可见 CLI / app-server 形状（codex_status 等）；不声称已拿到对方全部插件。"
+        },
+        {
+          "kind": "tool_verify",
+          "status": "partial",
+          "summary": "cli_ok / auth_ok 为桩数据正常；互操作结论是能对话 ≠ 能调全部插件。"
+        },
+        {
+          "kind": "quota",
+          "status": "ok",
+          "summary": "quota_exhausted=false（mock）；耗尽时应跳过并改由执行官接管。"
+        }
+      ],
+      "tools": [
+        {
+          "id": "codex_status",
+          "name": "链路状态",
+          "api_name": "codex_status",
+          "claimed": true,
+          "verified": true,
+          "note": "本页为 mock 桩，不代表此刻真实探测"
+        },
+        {
+          "id": "peer-plugins",
+          "name": "对方内部 MCP / 插件全集",
+          "api_name": "peer_mcp_plugins",
+          "claimed": false,
+          "verified": false,
+          "note": "不能直接调用它们的全部 MCP 和插件"
+        }
+      ],
+      "inventory_claimed": 1,
+      "inventory_verified": 1,
+      "test_session": "项目连接其他Agent",
+      "test_reply": null,
+      "screenshot_verify": null,
+      "notes": "互操作记录：分别向 WorkBuddy 与豆包发送并读取回复；尚未实现三方自动同步。可用范围取决于各应用是否向外暴露工具、账号权限和审批要求。 本条来自 Operator Board 离线 mock，不是对你机器或厂商账号的实时探活。",
+      "last_probe_at": "2026-11-10T01:18:00Z"
+    },
+    {
+      "id": "doubao",
+      "title": "豆包",
+      "title_en": "Doubao",
+      "kind": "doubao",
+      "endpoint": "desktop://Doubao",
+      "optional": true,
+      "product": "豆包桌面应用（可选桩）",
+      "source": "catalog",
+      "layers": [
+        {
+          "kind": "chat_bridge",
+          "status": "ok",
+          "summary": "已通过桌面桥发送消息并读到回复。"
+        },
+        {
+          "kind": "tool_inventory",
+          "status": "unverified",
+          "summary": "尚未列出或确认其内部 MCP / 插件。"
+        },
+        {
+          "kind": "tool_verify",
+          "status": "unverified",
+          "summary": "已能驱动聊天界面，尚未验证内部插件调用。"
+        },
+        {
+          "kind": "quota",
+          "status": "unverified",
+          "summary": "本轮未探测配额。"
+        }
+      ],
+      "tools": [
+        {
+          "id": "doubao-chat-bridge",
+          "name": "桌面对话桥",
+          "api_name": "desktop_chat_bridge",
+          "claimed": true,
+          "verified": true,
+          "note": "已发消息并读到回复"
+        },
+        {
+          "id": "doubao-plugins",
+          "name": "内部 MCP / 插件",
+          "api_name": "doubao_plugins",
+          "claimed": false,
+          "verified": false,
+          "note": "聊天界面已驱动，插件未验证"
+        }
+      ],
+      "inventory_claimed": 0,
+      "inventory_verified": 0,
+      "test_session": null,
+      "test_reply": null,
+      "screenshot_verify": {
+        "status": "fail",
+        "label": "截图核验失败",
+        "detail": "额外截图检验遇到窗口识别错误。此失败只标记 screenshot-verify，不能写成对话桥失败，也不能写成插件已通。"
+      },
+      "notes": "可选桩。对话桥接成功，也不意味着内部插件全部开放。 本条来自 Operator Board 离线 mock，不是对你机器或厂商账号的实时探活。",
+      "last_probe_at": "2026-11-06T08:42:00Z"
+    }
+  ],
+  "_comment": "Offline Operator Board mock only. Not a live MCP registration, not a live vendor connection. Channel kinds use adapters/registry.json ids where they map (workbuddy, codex); 豆包 is a free-form example channel, not a shipped adapter."
+}

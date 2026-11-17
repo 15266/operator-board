@@ -1,0 +1,521 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kb.entry/1.0",
+  "title": "KbEntry — one finished external-AI dispatch stored in the local knowledge base",
+  "type": "object",
+  "required": [
+    "contract",
+    "id",
+    "uri",
+    "dispatch_id",
+    "executor",
+    "state",
+    "success",
+    "artifacts",
+    "refs",
+    "created_at"
+  ],
+  "properties": {
+    "contract": {
+      "const": "kb.entry/1.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^kb-[0-9]{8}-[0-9a-f]{8}$",
+      "description": "kb-<Asia/Shanghai yyyyMMdd of dispatch>-<sha256(dispatch_id)[0:8]>; deterministic so ingest is idempotent"
+    },
+    "uri": {
+      "type": "string",
+      "pattern": "^kb://kb-[0-9]{8}-[0-9a-f]{8}$"
+    },
+    "dispatch_id": {
+      "type": "string",
+      "description": "DispatchRecord.id; unique in the store"
+    },
+    "task_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "project_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "executor": {
+      "type": "string",
+      "description": "channel / scanner id string; NOT a vendor enum"
+    },
+    "model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "description": "DispatchRecord.state copied verbatim (verified, replied_unverified, partial, failed, handoff_closed, ...). Never invented."
+    },
+    "success": {
+      "type": "boolean",
+      "description": "true only for state=verified. replied_unverified / partial are not success."
+    },
+    "via": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "prompt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128000,
+      "description": "prompt as sent (incl. any 前序产物 block), secrets scrubbed"
+    },
+    "prompt_truncated": {
+      "type": "boolean"
+    },
+    "reply": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200000
+    },
+    "reply_truncated": {
+      "type": "boolean"
+    },
+    "error": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "ok"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "description": "DispatchRecord.evidence with secret-looking keys redacted (booleans kept)"
+    },
+    "cwd": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "dispatch working dir on this machine (local path, not portable)"
+    },
+    "artifacts": {
+      "type": "array",
+      "maxItems": 400,
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "root",
+          "size",
+          "sha256",
+          "attribution"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "POSIX path relative to root"
+          },
+          "root": {
+            "enum": [
+              "cwd",
+              "project",
+              "board"
+            ],
+            "description": "cwd = per-dispatch dir; project = shared rec.project_dir; board = operator-board root"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "mtime": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "attribution": {
+            "enum": [
+              "reported_by_adapter",
+              "time_window",
+              "project_dir_time_window"
+            ],
+            "description": "time_window = modified in cwd during the run; project_dir_time_window = modified in the shared project_dir during the run (may belong to overlapping dispatches)"
+          },
+          "blob": {
+            "type": "boolean",
+            "description": "v2: true = copy in data/blobs/<sha[0:2]>/<sha256> (KB_BLOB_MAX, default 50MB)"
+          },
+          "blob_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "why no copy: source_missing | too_large(>NB) | changed_since_ingest(sha256_now=…) | changed_during_copy | overwritten_since_dispatch(sha256_now=…)"
+          },
+          "carried_from_previous_ingest": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "artifacts_note": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "overlapping_dispatches": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^kb-[0-9]{8}-[0-9a-f]{8}$"
+      },
+      "description": "kb ids this dispatch consumed via kb_refs"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dispatch_created_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "+08:00"
+    },
+    "dispatch_finished_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "+08:00"
+    },
+    "created_at": {
+      "type": "string",
+      "description": "first ingest time, +08:00"
+    },
+    "updated_at": {
+      "type": "string",
+      "description": "last (re)ingest time, +08:00"
+    },
+    "state_hash": {
+      "type": "string",
+      "description": "internal change detector: state|finished_at|reply len|error len"
+    },
+    "project_dir": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sandbox": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sandbox_source": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "overlapping_dispatches_project_dir": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "event": {
+      "$id": "kb.event/1.0",
+      "type": "object",
+      "required": [
+        "contract",
+        "event_id",
+        "id",
+        "project_id",
+        "kind",
+        "actor",
+        "at",
+        "summary",
+        "payload",
+        "source"
+      ],
+      "properties": {
+        "contract": {
+          "const": "kb.event/1.0"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^ev-[0-9a-f]{16}$|^[A-Za-z0-9_.:-]{1,120}$"
+        },
+        "id": {
+          "type": "string"
+        },
+        "project_id": {
+          "type": "string",
+          "description": "'_unassigned' when unknown"
+        },
+        "task_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "parent_task_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dispatch_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,47}$",
+          "description": "open: project_created|task_created|task_split|task_updated|task_removed|assigned|dispatched|state_changed|completed|failed|handoff_closed|doc_version|note"
+        },
+        "from_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "to_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "actor": {
+          "type": "string"
+        },
+        "at": {
+          "type": "string",
+          "description": "ISO 8601 with +08:00"
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "payload": {
+          "type": "object",
+          "description": "≤16KB JSON, secrets rejected"
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "doc": {
+      "$id": "kb.doc/1.0",
+      "type": "object",
+      "required": [
+        "id",
+        "project_id",
+        "doc_type",
+        "title",
+        "latest_version",
+        "latest_sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^doc-[0-9a-f]{12}$"
+        },
+        "project_id": {
+          "type": "string"
+        },
+        "doc_type": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "title": {
+          "type": "string"
+        },
+        "path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "enum": [
+            "post",
+            "scan",
+            "dispatch"
+          ]
+        },
+        "latest_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "latest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "doc_version": {
+      "$id": "kb.doc_version/1.0",
+      "type": "object",
+      "required": [
+        "id",
+        "doc_id",
+        "version",
+        "sha256",
+        "size",
+        "at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "<doc_id>:v<n>"
+        },
+        "doc_id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer"
+        },
+        "blob": {
+          "const": true
+        },
+        "at": {
+          "type": "string"
+        }
+      }
+    },
+    "node": {
+      "$id": "kb.node/1.0",
+      "type": "object",
+      "required": [
+        "id",
+        "parent_id",
+        "kind",
+        "title",
+        "project_id",
+        "rollup",
+        "has_children",
+        "links"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "p:<pid> | ph:<pid>:<phase> | t:<pid>:<task_id> | d:<dispatch_id> | a:<kb_id>:<n> | docs:<pid> | doc:<doc_id> | dv:<doc_id>:<n>"
+        },
+        "parent_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "project_id": {
+          "type": "string"
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rollup": {
+          "type": "object",
+          "required": [
+            "state",
+            "counts"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "verified",
+                "failed",
+                "running",
+                "needs_check",
+                "in_progress",
+                "not_started",
+                "empty"
+              ]
+            },
+            "counts": {
+              "type": "object"
+            }
+          }
+        },
+        "has_children": {
+          "type": "boolean"
+        },
+        "child_count": {
+          "type": "integer"
+        },
+        "refs": {
+          "type": "object"
+        },
+        "links": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

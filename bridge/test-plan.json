@@ -1,0 +1,84 @@
+{
+    "run": "1110-1914",
+    "project": {
+        "project_id": "akili-ai-dispatch-test",
+        "name": "AI 派发连通测试 1110-1914",
+        "notes": "每个 AI 一个小任务：回复固定口令 + 一句自我介绍；WorkBuddy 额外新建 wb-test.txt。结果由本机桥接 127.0.0.1:5180 实测回填。计划文件：TEST-PLAN-ai-dispatch.md"
+    },
+    "tasks": [
+        {
+            "task_id": "akili-ai-dispatch-test-workbuddy",
+            "project_id": "akili-ai-dispatch-test",
+            "title": "WorkBuddy：建测试文件并回复口令",
+            "description": "这是 AKILI 操作台的连通测试，请只做两件事：1）在当前工作目录新建文件 wb-test.txt，内容只有一行：AKILI-TEST-WORKBUDDY-1110-1914；2）然后回复一行：AKILI-TEST-WORKBUDDY-1110-1914，再加一句不超过20字的自我介绍。不要做其他任何事。",
+            "priority": "P1",
+            "executor_channel_id": "workbuddy",
+            "model": null,
+            "expect": {
+                "token": "AKILI-TEST-WORKBUDDY-1110-1914",
+                "file": "wb-test.txt"
+            },
+            "cwd": "ai-dispatch-test/1110-1914/workbuddy"
+        },
+        {
+            "task_id": "akili-ai-dispatch-test-codex",
+            "project_id": "akili-ai-dispatch-test",
+            "title": "Codex：回复口令（只发 1 次）",
+            "description": "这是连通测试。只回复一行：AKILI-TEST-CODEX-1110-1914，再加一句不超过20字的自我介绍。不要执行命令，不要读写文件，不要解释。",
+            "priority": "P1",
+            "executor_channel_id": "codex",
+            "model": null,
+            "expect": {
+                "token": "AKILI-TEST-CODEX-1110-1914"
+            },
+            "cwd": "ai-dispatch-test/1110-1914/codex"
+        },
+        {
+            "task_id": "akili-ai-dispatch-test-doubao",
+            "project_id": "akili-ai-dispatch-test",
+            "title": "豆包：回复口令",
+            "description": "这是连通性测试。请只回复一行：AKILI-TEST-DOUBAO-1110-1914，再加一句不超过20字的自我介绍，不要解释。",
+            "priority": "P1",
+            "executor_channel_id": "doubao",
+            "model": null,
+            "expect": {
+                "token": "AKILI-TEST-DOUBAO-1110-1914"
+            },
+            "cwd": "ai-dispatch-test/1110-1914/doubao"
+        },
+        {
+            "task_id": "akili-ai-dispatch-test-workbuddy-1111",
+            "project_id": "akili-ai-dispatch-test",
+            "title": "WorkBuddy：建测试文件并回复口令 1111-0900",
+            "description": "这是 AKILI 操作台的连通测试，请只做两件事：1）在当前工作目录新建文件 wb-test.txt，内容只有一行：AKILI-TEST-WORKBUDDY-1111-0900；2）然后回复一行：AKILI-TEST-WORKBUDDY-1111-0900，再加一句不超过20字的自我介绍。不要做其他任何事。不要操作 UE 工程，不要关闭或重启其他程序。",
+            "priority": "P1",
+            "executor_channel_id": "workbuddy",
+            "model": null,
+            "expect": {
+                "token": "AKILI-TEST-WORKBUDDY-1111-0900",
+                "file": "wb-test.txt"
+            },
+            "cwd": "ai-dispatch-test/1111-0900/workbuddy"
+        },
+        {
+            "task_id": "akili-ai-dispatch-test-codex-1111",
+            "project_id": "akili-ai-dispatch-test",
+            "title": "Codex：回复口令 1111-0900（只发 1 次）",
+            "description": "这是连通测试。只回复一行：AKILI-TEST-CODEX-1111-0900，再加一句不超过20字的自我介绍。不要执行命令，不要读写文件，不要解释。",
+            "priority": "P1",
+            "executor_channel_id": "codex",
+            "model": null,
+            "expect": {
+                "token": "AKILI-TEST-CODEX-1111-0900"
+            },
+            "cwd": "ai-dispatch-test/1111-0900/codex"
+        },
+        {
+            "task_id": "github-upload-operator-board",
+            "project_id": "operator-board-github-upload",
+            "title": "在 GitHub 新建仓库并上传 operator-board",
+            "cwd": "operator-board",
+            "model": null
+        }
+    ]
+}

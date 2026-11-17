@@ -1,0 +1,598 @@
+/* Rhine 档案视觉区 — 独立动效样式，仅作用于 .rhine-hero 子树。
+   不覆盖全局 token，不写 index.css。 */
+
+.rhine-hero {
+  --rhine-line: var(--hairline, rgba(236, 231, 223, 0.08));
+  --rhine-accent: var(--accent, #c99a6a);
+  --rhine-ink: var(--text, #ece7df);
+  --rhine-dim: var(--muted, #a49b8e);
+  position: relative;
+  margin: 0 0 18px;
+  padding: 18px;
+  border: 1px solid var(--border, #3a352c);
+  border-radius: 10px;
+  background:
+    radial-gradient(120% 160% at 8% -20%, var(--accent-soft, rgba(201, 154, 106, 0.16)), transparent 58%),
+    linear-gradient(180deg, var(--bg-elev, #232019), var(--bg-panel, #1b1916));
+  box-shadow: var(--shadow, 0 10px 26px rgba(0, 0, 0, 0.34));
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.rhine-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(var(--rhine-line) 1px, transparent 1px);
+  background-size: 100% 34px;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rhine-hero-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.rhine-hero-heading {
+  min-width: 0;
+  max-width: 62ch;
+}
+
+.rhine-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rhine-dim);
+}
+
+.rhine-kicker-mark {
+  width: 22px;
+  height: 1px;
+  background: var(--rhine-accent);
+  box-shadow: 0 0 10px var(--rhine-accent);
+}
+
+.rhine-hero-heading h2 {
+  margin: 0 0 6px;
+  font-size: clamp(17px, 1.6vw, 21px);
+  letter-spacing: 0.02em;
+  color: var(--rhine-ink);
+}
+
+.rhine-hero-sub {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--text-secondary, #cfc8bd);
+}
+
+.rhine-hero-sub strong {
+  color: var(--rhine-ink);
+  font-weight: 600;
+}
+
+.rhine-hero-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rhine-scan-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border: 1px solid var(--border-subtle, #2c2822);
+  border-radius: 999px;
+  background: var(--bg-inset, #171512);
+  font-size: 11.5px;
+  color: var(--text-secondary, #cfc8bd);
+  white-space: nowrap;
+}
+
+.rhine-scan-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--rhine-dim);
+  flex: none;
+}
+
+.rhine-scan-chip.tone-scanning {
+  border-color: var(--warn-border, #5e4c28);
+  background: var(--warn-bg, #251f14);
+  color: var(--warn-fg, #e8d3a2);
+}
+
+.rhine-scan-chip.tone-scanning .rhine-scan-dot {
+  background: var(--warn, #d3ab68);
+  animation: rhine-beat 1.4s ease-in-out infinite;
+}
+
+.rhine-scan-chip.tone-done .rhine-scan-dot {
+  background: var(--accent, #c99a6a);
+}
+
+.rhine-scan-chip.tone-example .rhine-scan-dot {
+  background: var(--info-fg, #c2ccd2);
+}
+
+.rhine-toggle {
+  appearance: none;
+  border: 1px solid var(--border, #3a352c);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary, #cfc8bd);
+  font: inherit;
+  font-size: 11.5px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+
+.rhine-toggle:hover {
+  color: var(--rhine-ink);
+  border-color: var(--rhine-accent);
+  background: var(--accent-soft, rgba(201, 154, 106, 0.16));
+}
+
+.rhine-toggle:active {
+  transform: scale(0.98);
+}
+
+.rhine-toggle:focus-visible,
+.rhine-thumb:focus-visible,
+.rhine-stage:focus-visible {
+  outline: 2px solid var(--focus, #d9ae80);
+  outline-offset: 2px;
+}
+
+.rhine-hero-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+}
+
+/* ---------- 主画面 ---------- */
+
+.rhine-stage {
+  --rhine-px: 0;
+  --rhine-py: 0;
+  position: relative;
+  min-height: 260px;
+  aspect-ratio: 2.42 / 1;
+  border: 1px solid var(--border, #3a352c);
+  border-radius: 8px;
+  background: var(--bg-inset, #171512);
+  overflow: hidden;
+  cursor: pointer;
+  transform: translateZ(0);
+}
+
+.rhine-stage:focus-visible {
+  outline-offset: -3px;
+}
+
+.rhine-stage-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--rhine-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rhine-line) 1px, transparent 1px);
+  background-size: 46px 46px;
+  opacity: 0.45;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85), transparent 72%);
+}
+
+.rhine-frame {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 400ms;
+}
+
+.rhine-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.055);
+  transition: transform 260ms ease-out;
+}
+
+.rhine-frame.is-active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+}
+
+.rhine-frame.is-active img {
+  transform: translate3d(calc(var(--rhine-px) * -14px), calc(var(--rhine-py) * -10px), 0) scale(1.055);
+  will-change: transform;
+}
+
+.rhine-stage-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(9, 8, 7, 0.06), transparent 34%, rgba(9, 8, 7, 0.62)),
+    linear-gradient(90deg, rgba(9, 8, 7, 0.42), transparent 42%);
+}
+
+.rhine-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -12%;
+  height: 26%;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--accent-soft, rgba(201, 154, 106, 0.16)) 42%,
+    rgba(201, 154, 106, 0.7) 50%,
+    var(--accent-soft, rgba(201, 154, 106, 0.16)) 58%,
+    transparent
+  );
+  mix-blend-mode: screen;
+}
+
+.rhine-stage.is-scanning .rhine-scanline {
+  opacity: 1;
+  animation: rhine-sweep 2.6s linear infinite;
+}
+
+.rhine-stage.is-pulsing {
+  border-color: var(--rhine-accent);
+}
+
+.rhine-stage.is-pulsing .rhine-frame.is-active img {
+  transform: translate3d(calc(var(--rhine-px) * -14px), calc(var(--rhine-py) * -10px), 0) scale(1.075);
+}
+
+.rhine-caption {
+  position: absolute;
+  left: 14px;
+  right: 96px;
+  bottom: 12px;
+  z-index: 5;
+  display: grid;
+  gap: 2px;
+  padding: 9px 12px;
+  border-left: 2px solid var(--rhine-accent);
+  background: linear-gradient(90deg, rgba(12, 11, 9, 0.72), rgba(12, 11, 9, 0.12));
+  backdrop-filter: blur(6px);
+  color: #f0ebe2;
+  pointer-events: none;
+}
+
+.rhine-caption-meta {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  color: #d9c3a6;
+}
+
+.rhine-caption strong {
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+}
+
+.rhine-caption span:last-child {
+  font-size: 11.5px;
+  color: rgba(240, 235, 226, 0.74);
+}
+
+.rhine-caption-copy {
+  display: grid;
+  gap: 2px;
+  animation: rhine-caption-in 150ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes rhine-caption-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rhine-stage-count {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding: 4px 8px;
+  border: 1px solid rgba(240, 235, 226, 0.22);
+  border-radius: 4px;
+  background: rgba(12, 11, 9, 0.5);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: #f0ebe2;
+  pointer-events: none;
+}
+
+.rhine-stage-count-divider {
+  opacity: 0.5;
+}
+
+/* ---------- 缩略卡 ---------- */
+
+.rhine-thumbs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.rhine-thumbs li {
+  min-width: 0;
+  animation: rhine-rise 480ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--rhine-i, 0) * 55ms);
+}
+
+.rhine-thumb {
+  appearance: none;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--border-subtle, #2c2822);
+  border-radius: 6px;
+  background: var(--bg-inset, #171512);
+  color: var(--rhine-dim);
+  font: inherit;
+  text-align: left;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.rhine-thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  opacity: 0.66;
+  filter: saturate(0.72);
+  transition: opacity 200ms ease, filter 200ms ease, transform 320ms ease;
+}
+
+.rhine-thumb-index {
+  display: block;
+  padding: 4px 6px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--rhine-dim);
+}
+
+.rhine-thumb-title {
+  display: block;
+  padding: 3px 6px 5px;
+  font-size: 10.5px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rhine-thumb:hover {
+  transform: translateY(-2px);
+  border-color: var(--rhine-accent);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.32);
+}
+
+.rhine-thumb:hover img {
+  opacity: 0.9;
+  filter: saturate(0.95);
+  transform: scale(1.03);
+}
+
+.rhine-thumb:active {
+  transform: translateY(0) scale(0.975);
+}
+
+.rhine-thumb.is-active {
+  border-color: var(--rhine-accent);
+  box-shadow: 0 0 0 1px var(--rhine-accent) inset;
+  color: var(--rhine-ink);
+}
+
+.rhine-thumb.is-active img {
+  opacity: 1;
+  filter: none;
+}
+
+.rhine-thumb.is-active .rhine-thumb-index {
+  color: var(--rhine-accent);
+}
+
+.rhine-hero-foot {
+  position: relative;
+  z-index: 1;
+  margin: 12px 0 0;
+  font-size: 10.5px;
+  line-height: 1.6;
+  color: var(--rhine-dim);
+}
+
+.rhine-hero-foot code {
+  font-size: 10px;
+}
+
+/* ---------- 动效 ---------- */
+
+@keyframes rhine-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rhine-sweep {
+  0% {
+    top: -30%;
+  }
+  100% {
+    top: 108%;
+  }
+}
+
+@keyframes rhine-beat {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(211, 171, 104, 0.36);
+  }
+  50% {
+    opacity: 0.55;
+    box-shadow: 0 0 0 4px rgba(211, 171, 104, 0);
+  }
+}
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 1080px) {
+  .rhine-thumbs {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(118px, 1fr);
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .rhine-thumb-title {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 720px) {
+  .rhine-hero {
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+
+  .rhine-hero-head {
+    gap: 10px;
+  }
+
+  .rhine-hero-tools {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .rhine-scan-chip {
+    white-space: normal;
+    line-height: 1.45;
+  }
+
+  .rhine-stage {
+    aspect-ratio: 4 / 3;
+    min-height: 210px;
+  }
+
+  .rhine-caption {
+    right: 12px;
+    left: 10px;
+    bottom: 10px;
+    padding: 8px 10px;
+  }
+
+  .rhine-stage-count {
+    top: 10px;
+    bottom: auto;
+  }
+
+  .rhine-hero-foot {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .rhine-stage {
+    aspect-ratio: 1 / 1;
+  }
+
+  .rhine-caption span:last-child {
+    display: none;
+  }
+}
+
+/* ---------- 减少动态效果 ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .rhine-hero *,
+  .rhine-hero *::before,
+  .rhine-hero *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .rhine-thumbs li {
+    opacity: 1;
+    transform: none;
+  }
+
+  .rhine-frame img {
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .rhine-stage.is-scanning .rhine-scanline {
+    animation: none;
+    opacity: 0.5;
+    top: 40%;
+  }
+
+  .rhine-thumb:hover,
+  .rhine-thumb:active,
+  .rhine-toggle:active {
+    transform: none;
+  }
+
+  .rhine-caption-copy {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Keep aspect-ratio media within its grid track when thumbnails are taller. */
+.rhine-stage { width: 100%; min-width: 0; align-self: start; }
+

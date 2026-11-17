@@ -1,0 +1,71 @@
+{
+  "id": "example-local",
+  "display_name": "Example local interface",
+  "discover": {
+    "processes": [
+      {
+        "name": "example-ai"
+      }
+    ],
+    "path": [
+      {
+        "command": "example-ai"
+      }
+    ],
+    "install_dirs": [
+      {
+        "path": "${LOCALAPPDATA}/Programs/ExampleAI",
+        "exists_file": "example-ai.exe"
+      }
+    ],
+    "ports": [
+      {
+        "host": "127.0.0.1",
+        "port": 12345,
+        "protocol": "http",
+        "probe_path": "/v1/models",
+        "role": "primary"
+      }
+    ]
+  },
+  "endpoint": {
+    "transport": "http",
+    "adapter": "openai-compatible",
+    "base_url_template": "http://127.0.0.1:${port}/v1",
+    "openai_compatible": true,
+    "paths": {
+      "models": "/v1/models",
+      "chat": "/v1/chat/completions"
+    }
+  },
+  "auth": {
+    "mode": "user_secret",
+    "auth_ref": "EXAMPLE_API_KEY",
+    "user_prompt": "把密钥放到环境变量 EXAMPLE_API_KEY，不要写进配置文件。"
+  },
+  "probe": {
+    "method": "http_get",
+    "path": "/v1/models",
+    "ok_when": "status_2xx",
+    "timeout_ms": 1000,
+    "live_default": false
+  },
+  "safety": {
+    "may_restart": false,
+    "may_kill": false,
+    "may_bind_port": false,
+    "may_start_if_stopped": false,
+    "do_not_disturb": [
+      "example-ai"
+    ]
+  },
+  "notes": "Template only. Rename id/paths. Listing /v1/models is not tool verification.",
+  "catalog": {
+    "method": "http_get",
+    "paths": [
+      "/v1/models"
+    ],
+    "timeout_ms": 1000,
+    "note": "Listing /v1/models is inventory, not tool verification."
+  }
+}

@@ -1,0 +1,17 @@
+
+/* Stable palette over the permanently ivory archive stage, regardless of sidebar theme. */
+.workspace:is(.is-archive-browse,.is-archive-detail,.is-archive-leaving) {
+ color-scheme:light; --bg:#eae5e1; --bg-panel:#f3efeb; --bg-elev:#fbfaf8; --bg-inset:#e6e0da;
+ --text:#1b1a17; --text-secondary:#3c3933; --muted:#625b51; --border:#b8afa4;
+ --border-subtle:#cec5ba; --ifx-slot:#fbfaf8; --accent:#79502d; --card-bg:rgba(250,247,243,.96);
+ --ok-bg:#e6efe4; --ok-fg:#2c5236; --ok-border:#a7c0a6;
+ --warn-bg:#f2ead8; --warn-fg:#634813; --warn-border:#cbb283;
+ --bad-bg:#f4e3df; --bad-fg:#7a2b23; --bad-border:#c99b93;
+ --info-bg:#e9e7e1; --info-fg:#3a3f42; --info-border:#b3b6b2; color:var(--text);
+}
+.workspace:is(.is-archive-browse,.is-archive-detail,.is-archive-leaving) .workspace-body { background:rgba(247,244,240,.94); }
+.workspace:is(.is-archive-browse,.is-archive-detail,.is-archive-leaving) .icon-btn:not(.add-channel-btn):not(.sidebar-create) { background:#fbfaf8; color:#1b1a17; border-color:#b8afa4; }
+.workspace:is(.is-archive-browse,.is-archive-detail,.is-archive-leaving) .add-channel-btn { background:#1b1a17; color:#f7f4f0; }
+.workspace .channel-matrix { color:var(--text); }
+.workspace .section-hint,.workspace .mini-label { color:var(--muted); }
+.workspace code { overflow-wrap:anywhere; }

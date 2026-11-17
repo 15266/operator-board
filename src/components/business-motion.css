@@ -1,0 +1,429 @@
+/* ==========================================================================
+   Business motion layer
+   Motion borrowed from RhineLabUI `src/ui-transitions.ts` timings (MIT) and
+   applied to this board's own interactions only:
+     400ms ease-in-out fade-out then fade-in (opacity only) · 300ms/12px surface enter · 200ms/8px exit
+     staggered card wave · extraction lift · scanning light band · counter roll
+   No marketing surfaces, no image gallery.
+   ========================================================================== */
+
+/* ---------- route body (view switch) ---------- */
+
+.route-body {
+  min-width: 0;
+  display: block;
+}
+
+.route-body[data-view-transition="out"],
+.route-body[data-view-transition="detail-out"] {
+  pointer-events: none;
+}
+
+/* ---------- list cards: wave entry ---------- */
+
+.motion-cards > li {
+  animation: motion-wave 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--motion-delay, 0ms);
+}
+
+.motion-card {
+  transform-origin: 50% 60%;
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.motion-card:hover {
+  transform: translateY(-2px);
+}
+
+.motion-card:active {
+  transform: translateY(0) scale(0.994);
+}
+
+/* extraction lift — the chosen card leaves the grid before the route changes */
+.motion-card.is-extracting {
+  position: relative;
+  z-index: 2;
+  border-color: var(--accent);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+@keyframes motion-wave {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- detail surface ---------- */
+
+[data-motion-surface][data-transition="opening"],
+[data-motion-surface][data-transition="closing"] {
+  will-change: opacity, transform;
+}
+
+[data-motion-surface][data-transition="closing"] {
+  pointer-events: none;
+}
+
+/* ---------- scanning light band ---------- */
+
+.interface-list-wrap {
+  position: relative;
+  display: block;
+}
+
+.scan-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  border-radius: 3px;
+}
+
+.scan-veil.is-active {
+  opacity: 1;
+}
+
+.scan-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -24%;
+  height: 20%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 10%, transparent) 42%,
+    color-mix(in srgb, var(--accent) 58%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 58%,
+    transparent
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+
+.scan-veil.is-active .scan-band {
+  opacity: 0.9;
+  animation: motion-scan 2.4s linear infinite;
+}
+
+.scan-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  font-size: var(--text-xs);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-wide);
+}
+
+.scan-note-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: motion-beat 1.2s ease-in-out infinite;
+}
+
+@keyframes motion-scan {
+  0% {
+    top: -24%;
+  }
+  100% {
+    top: 104%;
+  }
+}
+
+@keyframes motion-beat {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  50% {
+    opacity: 0.5;
+    box-shadow: 0 0 0 3px transparent;
+  }
+}
+
+/* ---------- counter roll ---------- */
+
+.motion-count {
+  display: inline-block;
+  overflow: hidden;
+  line-height: 1.1;
+  vertical-align: bottom;
+  font-variant-numeric: tabular-nums;
+}
+
+.motion-count-inner {
+  display: inline-block;
+  animation: motion-roll 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes motion-roll {
+  from {
+    opacity: 0;
+    transform: translateY(72%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- sidebar switch (archive-index ink) ---------- */
+
+.sidebar-nav a {
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 150ms ease;
+}
+
+.sidebar-nav a:active {
+  opacity: 0.78;
+}
+
+.sidebar-nav a.is-active {
+  animation: motion-ink 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes motion-ink {
+  from {
+    box-shadow: inset 0 0 0 var(--text);
+  }
+  to {
+    box-shadow: inset 2px 0 0 var(--text);
+  }
+}
+
+/* Archive ledger rows: ink, not a floating card lift. */
+a.ifx-row.motion-card:hover,
+a.ifx-row.motion-card:active {
+  transform: none;
+}
+
+a.ifx-row.motion-card:active {
+  background: color-mix(in srgb, var(--text) 9%, transparent);
+}
+
+/* ---------- interface grid: 4 / 2 / 1 ---------- */
+
+.interface-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1180px) {
+  .interface-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .interface-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- fold / disclosure ---------- */
+
+.motion-fold-panel,
+[data-motion-fold] {
+  overflow: hidden;
+}
+
+.motion-fold-inner {
+  min-height: 0;
+}
+
+[data-motion-fold][data-transition="opening"],
+[data-motion-fold][data-transition="closing"] {
+  will-change: opacity, transform, height;
+}
+
+[data-motion-fold][data-transition="closing"] {
+  pointer-events: none;
+}
+
+.howto > summary,
+.ifx-fold > summary,
+.interface-advanced > summary,
+.project-pref-details > summary {
+  transition: color 150ms ease, opacity 150ms ease;
+}
+
+.howto > summary:active,
+.ifx-fold > summary:active,
+.interface-advanced > summary:active,
+.project-pref-details > summary:active {
+  opacity: 0.72;
+}
+
+/* ---------- press / focus on primary controls ---------- */
+
+.icon-btn,
+.sidebar-create,
+.add-channel-btn,
+.add-channel-tile,
+.text-btn,
+.motion-press {
+  transition:
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    opacity 150ms ease;
+}
+
+.icon-btn:active,
+.sidebar-create:active,
+.add-channel-btn:active,
+.add-channel-tile:active,
+.motion-press:active {
+  transform: scale(0.98);
+}
+
+.text-btn:active {
+  opacity: 0.72;
+}
+
+/* ---------- view / empty / channel entrance ---------- */
+
+.motion-view-stack > * {
+  animation: motion-wave 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.motion-view-stack > *:nth-child(1) { animation-delay: 0ms; }
+.motion-view-stack > *:nth-child(2) { animation-delay: 42ms; }
+.motion-view-stack > *:nth-child(3) { animation-delay: 84ms; }
+.motion-view-stack > *:nth-child(4) { animation-delay: 126ms; }
+.motion-view-stack > *:nth-child(5) { animation-delay: 168ms; }
+.motion-view-stack > *:nth-child(6) { animation-delay: 210ms; }
+.motion-view-stack > *:nth-child(7) { animation-delay: 252ms; }
+.motion-view-stack > *:nth-child(8) { animation-delay: 294ms; }
+.motion-view-stack > *:nth-child(n + 9) { animation-delay: 336ms; }
+
+.task-list.motion-cards > li:nth-child(1) { --motion-delay: 0ms; }
+.task-list.motion-cards > li:nth-child(2) { --motion-delay: 42ms; }
+.task-list.motion-cards > li:nth-child(3) { --motion-delay: 84ms; }
+.task-list.motion-cards > li:nth-child(4) { --motion-delay: 126ms; }
+.task-list.motion-cards > li:nth-child(5) { --motion-delay: 168ms; }
+.task-list.motion-cards > li:nth-child(6) { --motion-delay: 210ms; }
+.task-list.motion-cards > li:nth-child(7) { --motion-delay: 252ms; }
+.task-list.motion-cards > li:nth-child(8) { --motion-delay: 294ms; }
+.task-list.motion-cards > li:nth-child(n + 9) { --motion-delay: 336ms; }
+
+.empty-state.motion-empty {
+  animation: motion-wave 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.channel-grid.motion-cards > .channel-card,
+.channel-grid.motion-cards > .add-channel-tile {
+  animation: motion-wave 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--motion-delay, 0ms);
+}
+
+.channel-matrix tbody tr {
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.channel-card.motion-card {
+  transform-origin: 50% 60%;
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-cards > li,
+  .motion-view-stack > *,
+  .empty-state.motion-empty,
+  .channel-grid.motion-cards > .channel-card,
+  .channel-grid.motion-cards > .add-channel-tile {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .motion-card,
+  .motion-card:hover,
+  .motion-card:active,
+  a.ifx-row.motion-card:hover,
+  a.ifx-row.motion-card:active {
+    transform: none;
+    transition: none;
+  }
+
+  .motion-card.is-extracting {
+    box-shadow: none;
+  }
+
+  .scan-veil {
+    transition: none;
+  }
+
+  .scan-veil.is-active .scan-band {
+    animation: none;
+    top: 42%;
+    opacity: 0.35;
+  }
+
+  .scan-note-dot {
+    animation: none;
+  }
+
+  .motion-count-inner {
+    animation: none;
+  }
+
+  .sidebar-nav a,
+  .sidebar-nav a.is-active,
+  .motion-press,
+  .motion-press:hover,
+  .motion-press:active,
+  .icon-btn,
+  .icon-btn:hover,
+  .icon-btn:active,
+  .sidebar-create,
+  .sidebar-create:hover,
+  .sidebar-create:active,
+  .add-channel-btn,
+  .add-channel-tile,
+  .text-btn,
+  .howto > summary,
+  .ifx-fold > summary,
+  .interface-advanced > summary,
+  .project-pref-details > summary,
+  .channel-matrix tbody tr {
+    animation: none;
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Let the actual interface workspace use the available desktop width. */
+#interfaces.panel { max-width: none; width: 100%; }
+.interface-grid > li { display: flex; min-width: 0; }
+.interface-grid .interface-card { width: 100%; height: 100%; }
+.interface-card .channel-card-top { flex-direction: column; align-items: flex-start; gap: .55rem; }
+.interface-card .channel-endpoint { font-size: .72rem; }
+
+
+.workspace-body.is-workspace:has(#interfaces) { max-width: 94rem; }
+

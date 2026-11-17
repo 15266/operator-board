@@ -1,0 +1,80 @@
+{
+  "id": "doubao",
+  "display_name": "Doubao desktop (CDP)",
+  "discover": {
+    "processes": [
+      {
+        "name": "Doubao",
+        "name_regex": "Doubao|豆包"
+      }
+    ],
+    "install_dirs": [
+      {
+        "path": "${env:DOUBAO_SERVER}"
+      },
+      {
+        "path": "${HOME}/agent-tools/dsh-doubao-bridge",
+        "exists_file": "server.mjs"
+      }
+    ],
+    "ports": [
+      {
+        "host": "127.0.0.1",
+        "from_process": true,
+        "protocol": "http",
+        "probe_path": "/json/version",
+        "role": "observed"
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 9225,
+        "protocol": "http",
+        "probe_path": "/json/version",
+        "role": "hint"
+      }
+    ]
+  },
+  "endpoint": {
+    "transport": "desktop_bridge",
+    "base_url_template": "http://127.0.0.1:${port}",
+    "paths": {
+      "version": "/json/version",
+      "list": "/json/list"
+    },
+    "notes": "CDP desktop_bridge. Promote into a Doubao/desktop adapter when one is registered; do not invent tool names from dsh-doubao-bridge."
+  },
+  "auth": {
+    "mode": "none",
+    "user_prompt": "桌面版已运行且 CDP 端口已监听时，通常不必再填密钥。"
+  },
+  "probe": {
+    "method": "http_get",
+    "path": "/json/version",
+    "ok_when": "status_2xx",
+    "timeout_ms": 1000,
+    "live_default": false
+  },
+  "safety": {
+    "may_restart": false,
+    "may_kill": false,
+    "may_bind_port": false,
+    "may_start_if_stopped": false,
+    "do_not_disturb": [
+      "Doubao",
+      "豆包"
+    ]
+  },
+  "compat_health_key": "doubao",
+  "notes": "Port 9225 is a declared hint, not the only default. If the CDP port moved, use from_process (loopback listen ports of the matched process). If a discovered port is already listening, leave the process alone (do not kill to 'fix' a probe). CDP /json/version is reachability, not chat_bridge=ok and not tool verification.",
+  "catalog": {
+    "method": "none",
+    "note": "CDP /json/version and /json/list are browser targets, not a model catalog. Official 工作任务 names are filled from Doubao Work docs; this is inventory, not a live account list.",
+    "published_models": [
+      "自动",
+      "豆包 2.1 Lite",
+      "豆包 2.1 Pro"
+    ],
+    "published_source": "https://www.doubao.com/work/docs/zh-cn/articles/047323472965-work-task-mode",
+    "published_as_of": "2026-11-11"
+  }
+}

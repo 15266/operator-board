@@ -1,0 +1,13 @@
+.workspace .access-board { margin-block:1.5rem; padding:1.25rem; background:#f7f4f0; color:#1b1a17; border:1px solid #b8afa4; }
+.access-board h3,.access-board h4 { margin:0 0 .8rem; color:#1b1a17; }
+.access-board p { color:#3c3933; line-height:1.7; overflow-wrap:anywhere; }
+.access-board a { color:#70431e; text-decoration:underline; }
+.access-picker,.access-fields { display:grid; gap:1rem; margin-block:1rem; }
+.access-picker { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.access-board label { display:grid; gap:.5rem; color:#3c3933; }
+.access-board input,.access-board select { width:100%; box-sizing:border-box; min-height:2.6rem; padding:.5rem; border:1px solid #b8afa4; background:#fffdfa; color:#1b1a17; }
+.access-details { border-top:1px solid #cec5ba; padding-top:1.2rem; }
+.access-details small { font-size:.8rem; font-weight:400; }
+.access-result { margin-top:1rem; padding:1rem; border-left:3px solid #79502d; background:#ebe5dc; }
+.access-board button:disabled { cursor:wait; opacity:.6; }
+@media(max-width:720px){.access-picker {grid-template-columns:1fr;}}
