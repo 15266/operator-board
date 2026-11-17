@@ -22,6 +22,10 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 
+# Python probe leftovers
+__pycache__/
+*.pyc
+
 # Local machine-only docs (contain absolute paths)
 AGENTS.md
 TASK-BRIEF.md
