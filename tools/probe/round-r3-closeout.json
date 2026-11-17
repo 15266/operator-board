@@ -1,0 +1,37 @@
+{
+  "title": "卡美洛 R3（灰渡镇）收尾轮",
+  "project_dir": "D:\\blender资料\\ai\\operator-board-main\\ai-dispatch-test\\adhoc",
+  "tasks": [
+    {
+      "executor": "codex",
+      "task_id": "task-r3-kay-config-diff",
+      "title": "R3 凯 · 契约 vs config.js 一致性（codex）",
+      "prompt_file": "p1-kay.txt",
+      "sandbox": "workspace-write",
+      "expect_files": [
+        "r3-logs/codex-config-diff.md"
+      ],
+      "expect_marker": "AKILI-R3-KAY-CODEX-1117"
+    },
+    {
+      "executor": "workbuddy",
+      "task_id": "task-r3-galahad-asset-map",
+      "title": "R3 加拉哈德 · 视觉资产命名核对",
+      "prompt_file": "p2-galahad.txt",
+      "expect_files": [
+        "r3-logs/visual-asset-map.md"
+      ],
+      "expect_marker": "AKILI-R3-GALAHAD-1117"
+    },
+    {
+      "executor": "doubao",
+      "task_id": "task-r3-tristan-audio-readiness",
+      "title": "R3 特里斯坦 · 听觉规范可执行性审查",
+      "prompt_file": "p3-tristan.txt",
+      "expect_files": [
+        "r3-logs/audio-readiness.md"
+      ],
+      "expect_marker": "AKILI-R3-TRISTAN-1117"
+    }
+  ]
+}
