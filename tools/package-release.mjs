@@ -17,7 +17,9 @@
  *
  * What is *kept* on purpose:
  *   dist/          built UI, so the zip runs without a build step
- *   ai-dispatch-test/  fixtures used by the bridge self-tests
+ *
+ * What is *not* in here: the sibling ai-dispatch-test/ project. It lives next to
+ * this repo, not inside it, so a release never carries someone's work product.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -28,8 +30,8 @@ const require = createRequire(import.meta.url);
 
 // fileURLToPath, not URL.pathname: paths with CJK chars get percent-encoded otherwise.
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const SKIP_DIRS = new Set(["node_modules", "releases", "evidence", "work", "logs", ".git", ".vite", "coverage", ".pnpm-store"]);
-const SKIP_EXT = [".bak", ".tmp", ".log", ".zip", ".orig"];
+const SKIP_DIRS = new Set(["node_modules", "releases", "evidence", "work", "logs", ".git", ".vite", "coverage", ".pnpm-store", "__pycache__"]);
+const SKIP_EXT = [".bak", ".tmp", ".log", ".zip", ".orig", ".pyc"];
 const SKIP_NAMES = new Set([".DS_Store", "Thumbs.db"]);
 
 const argv = process.argv.slice(2);
