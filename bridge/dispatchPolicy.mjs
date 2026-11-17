@@ -115,6 +115,26 @@ export function evaluateChecks({ reply, cwd, expect_files = null, expect_marker 
   return { checks, allOk, explicit };
 }
 
+/**
+ * The executor's own stop reason (e.g. ACP PARTIAL_SUCCESS) is an opinion, not evidence.
+ * It is appended as an advisory row that can never change the verdict — the function returns
+ * checks only, so it structurally cannot touch allOk. Verified still means "objective checks
+ * passed"; the row is shown in the amber 提醒 tone so a human can look closer.
+ * (2026-11-17: all 7 checks OK, agent reported PARTIAL_SUCCESS after an unrelated pip hiccup,
+ *  and the record was pushed to replied_unverified.)
+ */
+export function withSelfReport(checks, outcome) {
+  if (!outcome) return checks;
+  return [
+    ...checks,
+    {
+      type: "self_report", target: null, ok: false, blocking: false, warn: true,
+      name: `执行器自报未完全成功（${outcome}）`,
+      detail: "仅提示：判定以客观校验为准，建议人工复核交付物",
+    },
+  ];
+}
+
 // ---------------- shared project dir (project_dir / cwd alias) ----------------
 const isWin = (platform) => platform === "win32";
 function norm(p, platform) { const r = path.resolve(p); return isWin(platform) ? r.toLowerCase() : r; }

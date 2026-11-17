@@ -3334,7 +3334,11 @@ function DispatchResult({ record }: { record: DispatchRecord }) {
           {record.checks.map((c, i) => (
             <li key={`${c.name}-${i}`}>
               {c.name || c.type || "无此信息"} ·{" "}
-              <span className={`status-text tone-${c.ok ? "ok" : "bad"}`}>{c.ok ? "通过" : "未通过"}</span>
+              {c.warn ? (
+                <span className="status-text tone-warn">提醒</span>
+              ) : (
+                <span className={`status-text tone-${c.ok ? "ok" : "bad"}`}>{c.ok ? "通过" : "未通过"}</span>
+              )}
               {c.detail ? <span className="muted"> · {c.detail}</span> : null}
             </li>
           ))}

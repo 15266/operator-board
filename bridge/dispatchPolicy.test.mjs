@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveCodexSandbox, buildCodexArgs, validateDispatchPolicy, newDispatchDir, evaluateChecks, resolveProjectDir, isUnder, CODEX_SANDBOX_DEFAULT } from "./dispatchPolicy.mjs";
+import { resolveCodexSandbox, buildCodexArgs, validateDispatchPolicy, newDispatchDir, evaluateChecks, withSelfReport, resolveProjectDir, isUnder, CODEX_SANDBOX_DEFAULT } from "./dispatchPolicy.mjs";
 
 test("sandbox precedence: dispatch > env > code default (read-only)", () => {
   assert.equal(CODEX_SANDBOX_DEFAULT, "read-only");
@@ -125,4 +125,27 @@ test("expect_files resolve against the dir passed as cwd (project_dir when given
   const proj = fs.mkdtempSync(path.join(os.tmpdir(), "pj-")); fs.writeFileSync(path.join(proj, "game.js"), "x");
   assert.equal(evaluateChecks({ reply: "ok", cwd: proj, expect_files: ["game.js"] }).allOk, true);
   fs.rmSync(proj, { recursive: true, force: true });
+});
+
+test("self-reported partial success is advisory: it annotates, never downgrades a clean verdict", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "sr-"));
+  fs.writeFileSync(path.join(dir, "out.txt"), "DELIVERED");
+  const base = evaluateChecks({ reply: "done MARK-1", cwd: dir, expect_files: ["out.txt"], expect_marker: "MARK-1" });
+  assert.equal(base.allOk, true);
+
+  const checks = withSelfReport(base.checks, "PARTIAL_SUCCESS");
+  // the advisory row is appended and marked non-blocking + warn so the UI can colour it amber
+  const row = checks[checks.length - 1];
+  assert.equal(row.type, "self_report");
+  assert.equal(row.blocking, false);
+  assert.equal(row.warn, true);
+  assert.match(row.name, /PARTIAL_SUCCESS/);
+  // the objective verdict is untouched — withSelfReport cannot even return allOk
+  assert.equal(base.allOk, true);
+  // every row still satisfies the UI contract (type + target + ok present)
+  for (const c of checks) assert.ok("type" in c && "target" in c && "ok" in c && typeof c.name === "string");
+  // no outcome -> no extra row, and the input array is not mutated
+  assert.equal(withSelfReport(base.checks, null).length, base.checks.length);
+  assert.equal(base.checks.some((c) => c.type === "self_report"), false);
+  fs.rmSync(dir, { recursive: true, force: true });
 });

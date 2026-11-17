@@ -160,6 +160,8 @@ interface CheckRow {
   detail?: string;
   type?: string;
   target?: string;
+  /** Advisory row (e.g. the executor's own stop reason): shown in amber, never decides the verdict. */
+  warn?: boolean;
 }
 
 function str(v: unknown): string | null {
@@ -180,7 +182,11 @@ function SandboxAndChecks({ sandbox, sandboxSource, projectDir, checks }: { sand
           {checks.map((c, i) => (
             <li key={`${c.name ?? c.type ?? "check"}-${i}`}>
               {c.name || c.type || NONE} ·{" "}
-              <span className={`status-text tone-${c.ok ? "ok" : "bad"}`}>{c.ok ? "通过" : "未通过"}</span>
+              {c.warn ? (
+                <span className="status-text tone-warn">提醒</span>
+              ) : (
+                <span className={`status-text tone-${c.ok ? "ok" : "bad"}`}>{c.ok ? "通过" : "未通过"}</span>
+              )}
               {c.detail ? <span className="muted"> · {c.detail}</span> : null}
               {c.target ? <span className="muted"> · <code>{c.target}</code></span> : null}
             </li>

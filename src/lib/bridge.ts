@@ -9,9 +9,17 @@ export interface DispatchCheck {
   name: string;
   ok: boolean;
   detail?: string;
-  /** Bridge v2: "marker" | "file" | "none" | "reply_nonempty" | "pending" (open string). */
+  /** Bridge v2: "marker" | "file" | "none" | "reply_nonempty" | "pending" | "self_report" | "salvage" (open string). */
   type?: string;
   target?: string | null;
+  /**
+   * false = advisory only: the row is shown but never decides the verdict.
+   * Used for the executor's own stop reason (e.g. ACP PARTIAL_SUCCESS), which is
+   * an opinion, not evidence — objective checks still decide verified.
+   */
+  blocking?: boolean;
+  /** Rendered in the amber "提醒" tone instead of pass/fail. */
+  warn?: boolean;
 }
 
 /** Known evidence fields (all optional; evidence stays an open record). */

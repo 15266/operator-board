@@ -11,7 +11,35 @@ import {
   canWatchWorkTaskSession,
   isWorkTaskMode,
   isLocalWorkTaskMode,
+  waitForRun,
 } from "./doubao-work-task.mjs";
+
+const snap = (o) => ({ asking: false, running: false, finished: false, thinking: false, executing: false, elapsed: "", assistantCount: 9, lastAssistant: "", loading: false, hasStop: false, ...o });
+
+test("waitForRun: a finished reply counts as progress even when assistantCount stays put", async () => {
+  // Live state 2026-11-17: same bubble reused, marker present, "共用时 6 分 49 秒", busy=false.
+  // The old isNew-only gate waited until the 15-minute timeout.
+  const done = snap({ finished: true, elapsed: "共用时 6 分 49 秒", lastAssistant: "…写完了\nAKILI-R3-AUDSUP-1117\nHANDOFF-DONE" });
+  let calls = 0;
+  const r = await waitForRun({ evalJs: async () => { calls++; return done; } },
+    { marker: "HANDOFF-DONE", timeoutMs: 5000, baseline: 9, baselineText: "旧回复", sleepMs: 1 });
+  assert.equal(r.status, "done");
+  assert.ok(calls >= 2, "must confirm with a second poll before declaring done");
+});
+
+test("waitForRun: the same reply we started with is not progress (no false done)", async () => {
+  const stale = snap({ finished: true, elapsed: "共用时 6 分 49 秒", lastAssistant: "旧回复 HANDOFF-DONE" });
+  const r = await waitForRun({ evalJs: async () => stale },
+    { marker: "HANDOFF-DONE", timeoutMs: 60, baseline: 9, baselineText: "旧回复 HANDOFF-DONE", sleepMs: 1 });
+  assert.equal(r.status, "timeout");
+});
+
+test("waitForRun: marker present but still busy is not done", async () => {
+  const busy = snap({ hasStop: true, lastAssistant: "…HANDOFF-DONE", assistantCount: 10 });
+  const r = await waitForRun({ evalJs: async () => busy },
+    { marker: "HANDOFF-DONE", timeoutMs: 60, baseline: 9, baselineText: "旧回复", sleepMs: 1 });
+  assert.equal(r.status, "timeout");
+});
 
 test("looksComposerSent: marker left the composer", () => {
   assert.equal(looksComposerSent({ hasMarker: true, len: 200 }, { hasMarker: false, len: 1 }), true);

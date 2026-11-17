@@ -22,7 +22,7 @@ import { createKb } from "./kb/routes.mjs";
 import { handleCodexHttp } from "./codexMgr.mjs"; // read-only /bridge/codex/* (Codex status, sessions, processes)
 import { killTree, sanitizeCodexEnv } from "./procUtil.mjs"; // taskkill /T /F on Windows; strip inherited CODEX_* for Codex children
 import { writeFileAtomicSync } from "./atomicWrite.mjs"; // temp + rename for logs/dispatches.json
-import { resolveCodexSandbox, buildCodexArgs, validateDispatchPolicy, newDispatchDir, evaluateChecks, resolveProjectDir, CODEX_SANDBOX_DEFAULT, CODEX_SANDBOX_ALLOWED } from "./dispatchPolicy.mjs"; // per-dispatch sandbox / cwd / checks
+import { resolveCodexSandbox, buildCodexArgs, validateDispatchPolicy, newDispatchDir, evaluateChecks, withSelfReport, resolveProjectDir, CODEX_SANDBOX_DEFAULT, CODEX_SANDBOX_ALLOWED } from "./dispatchPolicy.mjs"; // per-dispatch sandbox / cwd / checks
 import { createProviderRegistry } from "./providers/index.mjs"; // read-only /bridge/providers, /bridge/provider/<id>/*
 import { createCodexProvider } from "./providers/codex.mjs";
 import { createAkili, akiliPayload, validateAkiliResult } from "./providers/akili.mjs"; // executor "akili" via webhook
@@ -109,13 +109,31 @@ function run(cmd, args, opts = {}) {
     try {
       child = spawn(cmd, args, { cwd: opts.cwd, env: opts.env || process.env, windowsHide: true, stdio: ["pipe", "pipe", "pipe"] });
     } catch (e) { resolve({ code: -1, out, err: String(e) }); return; }
-    const timer = setTimeout(() => { err += "\n[bridge] timeout"; killTree(child).then((k) => { err += `\n[bridge] kill: ${k.method}${k.reason ? " (" + k.reason + ")" : ""}`; }); }, opts.timeoutMs || 300000);
+    let doneTimer = null, settled = false, timer = null;
+    // Resolve once, from whichever signal arrives first. 'close' is the good path (all stdio
+    // flushed), but it only fires when every inherited pipe is closed: a descendant that keeps
+    // the write end open leaves the dispatch stuck in `running` forever even though the child is
+    // long gone (hit 2026-11-17 on a doubao handoff: child EXITED, file written, record frozen).
+    const finish = (code, note) => {
+      if (settled) return;
+      settled = true;
+      if (timer) clearTimeout(timer);
+      if (doneTimer) clearInterval(doneTimer);
+      if (note) err += "\n[bridge] " + note;
+      resolve({ code, out, err, endedAfterDone: /ended by bridge/.test(err) });
+    };
+    timer = setTimeout(() => {
+      err += "\n[bridge] timeout";
+      killTree(child).then((k) => { err += `\n[bridge] kill: ${k.method}${k.reason ? " (" + k.reason + ")" : ""}`; });
+      // If the tree refuses to die, still end the wait so the record never stays `running`.
+      setTimeout(() => finish(-1, "resolved after timeout; process did not exit"), 15000);
+    }, opts.timeoutMs || 300000);
     child.stdout.on("data", (d) => { out += d.toString("utf8"); });
     child.stderr.on("data", (d) => { err += d.toString("utf8"); });
     child.on("error", (e) => { err += String(e); });
     // codex exec sometimes stays alive after writing its final message; once the done file
     // has non-empty content and stops changing for doneGraceMs, end the process ourselves.
-    let doneTimer = null, lastSize = -1, stableSince = 0;
+    let lastSize = -1, stableSince = 0;
     if (opts.doneFile) doneTimer = setInterval(() => {
       let size = 0; try { size = fs.statSync(opts.doneFile).size; } catch { size = 0; }
       if (size > 0 && size === lastSize) {
@@ -124,7 +142,9 @@ function run(cmd, args, opts = {}) {
       } else { stableSince = 0; }
       lastSize = size;
     }, 3000);
-    child.on("close", (code) => { clearTimeout(timer); if (doneTimer) clearInterval(doneTimer); resolve({ code, out, err, endedAfterDone: /ended by bridge/.test(err) }); });
+    child.on("close", (code) => finish(code));
+    // Fallback: the child is gone but something still holds its stdout open.
+    child.on("exit", (code) => setTimeout(() => finish(code, "resolved on exit; stdio still held open by a descendant"), 1500));
     if (opts.stdin != null) child.stdin.end(opts.stdin, "utf8"); else child.stdin.end();
   });
 }
@@ -420,10 +440,17 @@ async function execute(rec, body) {
       delete rec._awaitingResult;
       update(rec, { checks: [{ type: "pending", target: null, ok: false, name: "已发送给 AKILI，等待 POST /bridge/dispatch/<id>/result 回写" }], state: "sent_awaiting_result", finished_at: null }, "已发送给 AKILI，等待结果回写（不算 verified）");
     } else {
-      const { checks, allOk: baseOk } = applyChecks(rec, expect, cwd);
-      let allOk = baseOk;
-      if (rec._partialOutcome) { checks.push({ name: "WorkBuddy 自报部分成功（" + rec._partialOutcome + "），需人工验收", ok: false }); allOk = false; delete rec._partialOutcome; }
-      update(rec, { checks, state: allOk ? "verified" : rec.reply ? "replied_unverified" : "failed", finished_at: now() }, allOk ? "校验通过" : "收到结果但校验未通过");
+      const { checks, allOk } = applyChecks(rec, expect, cwd);
+      // Advisory only: withSelfReport appends the executor's own stop reason as a non-blocking row
+      // and cannot touch allOk, so an agent that says "PARTIAL_SUCCESS" after a harmless hiccup no
+      // longer overrides objective checks that all passed.
+      if (rec._partialOutcome) {
+        rec.evidence = { ...rec.evidence, partial_success: true };
+      }
+      const finalChecks = withSelfReport(checks, rec._partialOutcome);
+      delete rec._partialOutcome;
+      const evt = allOk ? (rec.evidence?.partial_success ? "校验通过（执行器自报未完全成功，已标注提醒）" : "校验通过") : "收到结果但校验未通过";
+      update(rec, { checks: finalChecks, state: allOk ? "verified" : rec.reply ? "replied_unverified" : "failed", finished_at: now() }, evt);
     }
   } catch (e) {
     const { checks } = applyChecks(rec, expect, cwd);
@@ -431,7 +458,7 @@ async function execute(rec, body) {
     const combined = rec.error && rec.error !== msg ? `${rec.error}；兜底也失败：${msg}` : msg;
     const salvaged = rec.executor === "workbuddy" && /rpc timeout for session\/prompt/.test(msg) ? salvageWorkBuddyArtifacts(rec, cwd) : null;
     if (salvaged?.length) {
-      update(rec, { checks: [...checks, { name: `超时后回收到 ${salvaged.length} 个产物，需人工验收`, ok: false }], state: "partial", error: combined, finished_at: now() }, "超时但找到产物，标为部分完成待验收：" + msg);
+      update(rec, { checks: [...checks, { type: "salvage", target: null, ok: false, name: `超时后回收到 ${salvaged.length} 个产物，需人工验收`, detail: salvaged.slice(0, 5).join("、") }], state: "partial", error: combined, finished_at: now() }, "超时但找到产物，标为部分完成待验收：" + msg);
     } else update(rec, { checks, state: "failed", error: combined, finished_at: now() }, "失败：" + msg);
   }
   delete rec._force;

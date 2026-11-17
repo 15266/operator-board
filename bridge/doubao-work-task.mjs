@@ -628,22 +628,32 @@ async function waitForComposerReady(evalJs, { timeoutMs = 8000, intervalMs = 250
   throw new Error((focus && focus.error) || "新工作任务页的输入框没有就绪，未发送任务");
 }
 
-async function waitForRun({ evalJs }, { marker, timeoutMs, baseline = 0, firstTokenMs = 150000 }) {
+export async function waitForRun({ evalJs }, { marker, timeoutMs, baseline = 0, baselineText = "", firstTokenMs = 150000, sleepMs = 3000 }) {
   const t0 = Date.now();
   let snapshot = null;
   const isNew = (s) => (s.assistantCount || 0) > baseline;
+  // A finished task can leave assistantCount unchanged (the work-task view reuses its reply node),
+  // so requiring a higher count alone hangs a run that already printed the marker: measured
+  // 2026-11-17, busy=false + marker present + "共用时 6 分 49 秒" for many minutes, killed at 15 min.
+  // Treat "the last reply is no longer the one we started with" as progress too.
+  const advanced = (s) => isNew(s) || !!(s.lastAssistant && s.lastAssistant !== baselineText);
+  let polls = 0;
   while (Date.now() - t0 < timeoutMs) {
-    await sleep(3000);
+    await sleep(sleepMs);
     snapshot = await evalJs(RUN_STATE_JS);
     const busy = snapshot.running || snapshot.thinking || snapshot.executing || snapshot.loading || snapshot.hasStop;
+    if (++polls % 5 === 0) {
+      // Leave a trace in stderr: the bridge surfaces it if this run times out.
+      process.stderr.write(`[handoff] poll=${polls} count=${snapshot.assistantCount}/${baseline} marker=${snapshot.lastAssistant.includes(marker)} busy=${busy} elapsed="${snapshot.elapsed}"\n`);
+    }
     if (snapshot.asking && !busy) {
       return { status: "needs-user", snapshot, elapsedMs: Date.now() - t0 };
     }
-    if (isNew(snapshot) && snapshot.lastAssistant.includes(marker) && !busy) {
-      await sleep(2000);
+    if (advanced(snapshot) && snapshot.lastAssistant.includes(marker) && !busy) {
+      await sleep(Math.min(2000, sleepMs));
       const confirm = await evalJs(RUN_STATE_JS);
       const confirmBusy = confirm.running || confirm.thinking || confirm.executing || confirm.loading || confirm.hasStop;
-      if (isNew(confirm) && confirm.lastAssistant.includes(marker) && !confirmBusy) {
+      if (advanced(confirm) && confirm.lastAssistant.includes(marker) && !confirmBusy) {
         return { status: "done", snapshot: confirm, elapsedMs: Date.now() - t0 };
       }
       snapshot = confirm;
@@ -700,7 +710,7 @@ export async function handoffWithModel({ project, task, model, timeoutMs = 90000
       } catch {}
       throw err;
     }
-    const r = await waitForRun({ evalJs }, { marker: "HANDOFF-DONE", timeoutMs, baseline: preRun.assistantCount || 0 });
+    const r = await waitForRun({ evalJs }, { marker: "HANDOFF-DONE", timeoutMs, baseline: preRun.assistantCount || 0, baselineText: preRun.lastAssistant || "" });
     const url = await evalJs("location.href");
     const chat = parseWorkTaskChatId(url);
     if (r.status === "no-first-token") {
