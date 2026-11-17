@@ -13,6 +13,8 @@ round.json 结构：
   ]
 }
 
+可选项：sandbox（codex 专用，read-only / workspace-write）、model（豆包专用，如 kimipro = Kimi K3.1 Pro）。
+
 prompt_file 先按当前目录找，找不到就按清单文件所在目录找，所以清单与提示词放一起即可。
 
 退出码：0 全部 verified；2 有任务结束但未通过校验；3 有任务仍在跑；1 请求被拒。
@@ -81,6 +83,8 @@ def main():
             payload["expect_marker"] = t["expect_marker"]
         if t.get("sandbox"):
             payload["sandbox"] = t["sandbox"]
+        if t.get("model"):
+            payload["model"] = t["model"]
         code, body = post("/bridge/dispatch", payload)
         name = t.get("title") or t.get("task_id")
         if code != 202:

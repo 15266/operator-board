@@ -59,6 +59,9 @@ test("resolveOfficialDoubaoModel keeps official names", () => {
   assert.equal(resolveOfficialDoubaoModel("豆包 2.1 Lite"), "豆包 2.1 Lite");
   assert.equal(resolveOfficialDoubaoModel("Kimi K3.1 Pro"), "Kimi K3.1 Pro");
   assert.equal(resolveOfficialDoubaoModel("kimi3pro"), "Kimi K3.1 Pro");
+  assert.equal(resolveOfficialDoubaoModel("kimipro"), "Kimi K3.1 Pro");
+  assert.equal(resolveOfficialDoubaoModel("Kimi Pro"), "Kimi K3.1 Pro");
+  assert.equal(resolveOfficialDoubaoModel("kimipro高速"), "Kimi K3.1 Pro 高速");
   assert.equal(resolveOfficialDoubaoModel("Kimi K3.1 Pro 高速"), "Kimi K3.1 Pro 高速");
   assert.equal(resolveOfficialDoubaoModel("not-a-model"), null);
 });

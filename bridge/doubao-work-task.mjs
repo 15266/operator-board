@@ -118,8 +118,8 @@ export function resolveOfficialDoubaoModel(requested) {
   if (key === "自动" || key === "auto") return "自动";
   if (key === "豆包2.1lite" || key === "lite") return "豆包 2.1 Lite";
   if (key === "豆包2.1pro" || key === "pro") return "豆包 2.1 Pro";
-  if (key === "kimik3.1pro" || key === "kimi3.1pro" || key === "kimi3pro") return "Kimi K3.1 Pro";
-  if (key === "kimik3.1pro高速" || key === "kimi3.1pro高速") return "Kimi K3.1 Pro 高速";
+  if (key === "kimik3.1pro" || key === "kimi3.1pro" || key === "kimi3pro" || key === "kimipro" || key === "kimi") return "Kimi K3.1 Pro";
+  if (key === "kimik3.1pro高速" || key === "kimi3.1pro高速" || key === "kimipro高速") return "Kimi K3.1 Pro 高速";
   if (key === "kimik3" || key === "kimi3") return "Kimi K3";
   if (key === "deepseekv4.1flash" || key === "deepseekv41flash") return "DeepSeek V4.1 Flash";
   if (key === "deepseekv4pro") return "DeepSeek V4 Pro";
