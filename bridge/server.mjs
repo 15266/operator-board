@@ -238,7 +238,7 @@ function portOpen(port) {
 }
 const CODEX_TIMEOUT_MS = Math.max(60000, Number(process.env.CODEX_TIMEOUT_MS) || 15 * 60 * 1000);
 async function adapterCodex(rec, cwd, dispatchDir = null) {
-  if (state.codexUsed >= CODEX_MAX && !rec._force) throw new Error(`Codex 额度保护：本桥接已发送 ${state.codexUsed} 次（上限 ${CODEX_MAX}），未再发送`);
+  if (state.codexUsed >= CODEX_MAX && !rec._force) throw new Error(`Codex 额度保护：本次启动已发送 ${state.codexUsed} 次（上限 ${CODEX_MAX}），未再发送；重启桥接可重置计数`);
   const codexEntry = (CODEX_JS && fs.existsSync(CODEX_JS)) ? CODEX_JS : ((CODEX_CMD && fs.existsSync(CODEX_CMD)) ? CODEX_CMD : "");
   if (!codexEntry) throw new Error("本机扫描未找到 Codex CLI（已查进程、PATH 与常见安装目录，未写死默认 npm 路径）");
   const dir = path.join(LOGS, "codex", rec.id); fs.mkdirSync(dir, { recursive: true });
@@ -521,7 +521,7 @@ async function health() {
   }
   const codexCli = (CODEX_JS && fs.existsSync(CODEX_JS)) || (CODEX_CMD && fs.existsSync(CODEX_CMD));
   const sbDefault = resolveCodexSandbox(null, process.env.CODEX_SANDBOX);
-  out.codex = { cli: !!codexCli, cli_path: CODEX_JS || CODEX_CMD || null, used: state.codexUsed, max: CODEX_MAX, proxy_port: PROXY_PORT || null, proxy_up: PROXY_PORT ? await portOpen(PROXY_PORT) : false,
+  out.codex = { cli: !!codexCli, cli_path: CODEX_JS || CODEX_CMD || null, used: state.codexUsed, max: CODEX_MAX, lifetime: codexLifetime, proxy_port: PROXY_PORT || null, proxy_up: PROXY_PORT ? await portOpen(PROXY_PORT) : false,
     codex_sandbox_default: sbDefault.value, codex_sandbox_default_source: sbDefault.source, codex_sandbox_code_default: CODEX_SANDBOX_DEFAULT, codex_sandbox_allowed: CODEX_SANDBOX_ALLOWED, ...(sbDefault.note ? { codex_sandbox_note: sbDefault.note } : {}) };
   try {
     const cdp = await resolveDoubaoCdp(1200);
@@ -706,8 +706,12 @@ for (const d of state.dispatches) {
   const j = d.executor === "workbuddy" && d.state === "failed" && !/jobs|job /.test(d.error || "") ? (d.events || []).find((x) => x.msg.startsWith("jobs 通道失败：")) : null;
   if (j) d.error = j.msg.replace("jobs 通道失败：", "") + "；兜底也失败：" + d.error;
 }
-// Codex quota counter = attempts that reached the server (network failures excluded).
-state.codexUsed = state.dispatches.filter((d) => d.executor === "codex" && (d.reply || !CODEX_NET_FAIL.test(d.error || ""))).length;
+// Codex quota counter is per bridge session, matching what the guard actually says ("本桥接已发送").
+// It used to be recomputed from the whole history at boot, so once the lifetime count passed
+// CODEX_MAX the channel stayed dead forever no matter how often you restarted (22/10 on 2026-11-17).
+// Restarting the bridge is now the reset; the lifetime total is still reported for reference.
+state.codexUsed = 0;
+const codexLifetime = state.dispatches.filter((d) => d.executor === "codex" && (d.reply || !CODEX_NET_FAIL.test(d.error || ""))).length;
 // Mark any dispatch left running by a previous bridge process.
 for (const d of state.dispatches) if (["queued", "running"].includes(d.state)) { d.state = "failed"; d.error = "桥接重启，过程中断（结果未知，待核实）"; }
 save();
