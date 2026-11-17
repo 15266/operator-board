@@ -59,6 +59,23 @@ function Test-Http([string]$url) {
   } catch { return $false }
 }
 
+# Files extracted from a downloaded zip carry the Mark-of-the-Web (Zone.Identifier ADS).
+# Under the default RemoteSigned policy those count as "remote unsigned" and PowerShell
+# refuses to dot-source them, so Find-WbVerifiedGateway goes missing and the bridge starts
+# with no gateway token -- king report then silently falls back to the deep link that never
+# lands (hit 2026-11-17). Unblock just the scripts we execute, once.
+function Clear-LocalMarks([string]$dir) {
+  $n = 0
+  foreach ($f in @('wbtoken.ps1', 'read-wb-serve.ps1')) {
+    $p = Join-Path $dir $f
+    if (-not (Test-Path -LiteralPath $p)) { continue }
+    if (Get-Item -LiteralPath $p -Stream Zone.Identifier -ErrorAction SilentlyContinue) {
+      try { Unblock-File -LiteralPath $p -ErrorAction Stop; $n++ } catch { Write-Log ("WARN cannot unblock " + $f + ": " + $_.Exception.Message) }
+    }
+  }
+  if ($n -gt 0) { Write-Log ("unblocked " + $n + " script(s) carrying the downloaded-file mark") }
+}
+
 function Stop-OurBridge {
   $hit = $false
   foreach ($p in (Get-CimInstance Win32_Process -Filter "Name='node.exe'" -ErrorAction SilentlyContinue)) {
@@ -127,8 +144,17 @@ if (Test-Path -LiteralPath $ensureDoubao) {
 }
 
 # 3. read WorkBuddy serve port + gateway credential
-. (Join-Path $bridgeDir 'wbtoken.ps1')
-$verifiedGateway = Find-WbVerifiedGateway
+#    Dot-sourcing wbtoken.ps1 fails when the file carries the downloaded-file mark (RemoteSigned
+#    treats it as remote unsigned), or when this process runs under AllSigned. Both leave
+#    Find-WbVerifiedGateway undefined -> bridge starts with no token -> king report silently
+#    falls back to the deep link that never lands. Clear the mark, then bypass the policy for
+#    this process only; Group Policy can still override, which is why the fallback below is loud.
+Clear-LocalMarks $bridgeDir
+try { Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force -ErrorAction Stop } catch {}
+try { . (Join-Path $bridgeDir 'wbtoken.ps1') } catch { Write-Log ("ERROR cannot load wbtoken.ps1: " + $_.Exception.Message) }
+$verifiedGateway = $null
+if (Get-Command Find-WbVerifiedGateway -ErrorAction SilentlyContinue) { $verifiedGateway = Find-WbVerifiedGateway }
+else { Write-Log 'ERROR Find-WbVerifiedGateway unavailable - gateway credential cannot be read' }
 $servePid = $null
 $wbPort = $null
 $wbTok = $null
@@ -139,6 +165,7 @@ if ($verifiedGateway) {
 }
 Write-Log ("serve_pid=" + $servePid + " wb_port=" + $wbPort + " token_present=" + [bool]$wbTok)
 if (-not $servePid) { Write-Log 'WARN WorkBuddy serve not running - workbuddy row will show found (no session)' }
+if (-not $wbTok) { Write-Log 'WARN no gateway token - king report will fall back to workbuddy:// deep link, which does NOT land; run this script through the 圆桌会议 .lnk (it passes -ExecutionPolicy Bypass)' }
 
 # 4. restart bridge with a fresh credential
 Stop-OurBridge

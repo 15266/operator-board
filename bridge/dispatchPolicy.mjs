@@ -81,7 +81,7 @@ export function newDispatchDir({ akili, planCwd = null, id, project_id = null, t
  * checks:[{type,target,ok,name,detail?}] (name/detail kept for the existing UI).
  * verified only if at least one explicit check (expect_files / expect_marker / plan expect) exists and all pass.
  */
-export function evaluateChecks({ reply, cwd, expect_files = null, expect_marker = null, planExpect = null, exists = (p) => fs.existsSync(p), readFile = (p) => fs.readFileSync(p, "utf8") }) {
+export function evaluateChecks({ reply, cwd, expect_files = null, expect_marker = null, planExpect = null, exists = (p) => fs.existsSync(p), readFile = (p) => fs.readFileSync(p, "utf8"), size = (p) => fs.statSync(p).size }) {
   const text = reply || "";
   const checks = [];
   if (planExpect?.token) checks.push({ type: "marker", target: planExpect.token, ok: text.includes(planExpect.token), name: `回复包含 ${planExpect.token}` });
@@ -95,8 +95,18 @@ export function evaluateChecks({ reply, cwd, expect_files = null, expect_marker 
   for (const rel of expect_files || []) {
     const f = cwd ? path.resolve(cwd, rel) : null;
     const inside = !!(f && (f === path.resolve(cwd) || f.startsWith(path.resolve(cwd) + path.sep)));
-    const ok = inside && exists(f);
-    checks.push({ type: "file", target: rel, ok, name: `文件 ${rel}`, detail: ok ? f : (inside ? "文件不存在：" + f : "路径越出派发目录") });
+    // Existence alone is a false positive: an executor that only `touch`es the path (0-byte placeholder)
+    // would otherwise be reported as verified. Require actual content.
+    let bytes = 0;
+    if (inside && exists(f)) { try { bytes = size(f); } catch { bytes = -1; } }
+    const ok = inside && bytes > 0;
+    checks.push({
+      type: "file", target: rel, ok, name: `文件 ${rel}`,
+      detail: !inside ? "路径越出派发目录"
+        : !ok && !exists(f) ? "文件不存在：" + f
+        : !ok ? "文件存在但为 0 字节（空占位不算交付）：" + f
+        : `${f}（${bytes} 字节）`,
+    });
   }
   const explicit = checks.length > 0;
   if (!explicit) checks.push({ type: "none", target: null, ok: false, name: "未设置校验（expect_files / expect_marker），不判定为已验证" });

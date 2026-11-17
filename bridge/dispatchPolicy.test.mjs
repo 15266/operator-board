@@ -60,6 +60,13 @@ test("verified only with explicit passing checks; no checks or failing check -> 
   r = evaluateChecks({ reply: "done", cwd: dir, expect_marker: "MARK-1" }); assert.equal(r.allOk, false);
   r = evaluateChecks({ reply: "MARK-1", cwd: dir, expect_files: ["out/missing.txt"], expect_marker: "MARK-1" }); assert.equal(r.allOk, false);
   assert.equal(r.checks.find((c) => c.target === "out/missing.txt").ok, false);
+  // 0-byte deliverable is a false positive: found live on 2026-11-17, an executor only touched the path.
+  fs.writeFileSync(path.join(dir, "out", "blank.txt"), "");
+  r = evaluateChecks({ reply: "MARK-1", cwd: dir, expect_files: ["out/blank.txt"], expect_marker: "MARK-1" });
+  assert.equal(r.allOk, false);
+  assert.match(r.checks.find((c) => c.target === "out/blank.txt").detail, /0 字节/);
+  r = evaluateChecks({ reply: "MARK-1", cwd: dir, expect_files: ["out/a.txt"] });
+  assert.match(r.checks.find((c) => c.target === "out/a.txt").detail, /字节/);
   r = evaluateChecks({ reply: "AKILI-T", cwd: dir, planExpect: { token: "AKILI-T" } }); assert.equal(r.allOk, true);
   r = evaluateChecks({ reply: "", cwd: dir, planExpect: { token: "AKILI-T" } }); assert.equal(r.allOk, false);
   fs.rmSync(dir, { recursive: true, force: true });
